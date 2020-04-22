@@ -1,0 +1,6 @@
+{
+  "bar_version": "2",
+  "box_version": "1",
+  "default_path": "<DEFAULT_BOX_NAME>",
+  "schema": "<APP_CELL_FQDN>"
+}
