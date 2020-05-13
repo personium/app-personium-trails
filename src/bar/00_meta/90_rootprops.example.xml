@@ -1,0 +1,13 @@
+<multistatus xmlns="DAV:">
+    <response>
+        <href>personium-localbox:/</href>
+        <propstat>
+            <prop>
+                <resourcetype>
+                    <collection/>
+                </resourcetype>
+            </prop>
+            <status>HTTP/1.1 200 OK</status>
+        </propstat>
+    </response>
+</multistatus>

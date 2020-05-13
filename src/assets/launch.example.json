@@ -1,0 +1,7 @@
+{
+  "personal": {
+    "web": "https://<CELL_FQDN>/__/front/app",
+    "android": "***:",
+    "ios": "***;"
+  }
+}
