@@ -1,0 +1,6 @@
+{
+  "bar_version": "2",
+  "box_version": "1",
+  "default_path": "app-personium-trails",
+  "schema": "https://app-personium-trails.appdev.personium.io/"
+}
