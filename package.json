@@ -7,7 +7,8 @@
     "build-bar": "gulp build_bar",
     "prebuild": "gulp copy_statics",
     "build": "gulp webpack",
-    "deploy": "gulp deploy"
+    "deploy": "gulp deploy",
+    "debug": "webpack-dev-server -d --progress --colors --open"
   },
   "repository": {
     "type": "git",
@@ -47,6 +48,8 @@
     "tunnel": "0.0.6",
     "webdav": "git+https://github.com/yoh1496/webdav-client.git#feature/updateProperty",
     "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.11.0",
     "webpack-stream": "^5.2.1",
     "xml2js": "^0.4.23"
   },

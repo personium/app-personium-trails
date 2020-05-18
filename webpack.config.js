@@ -34,8 +34,10 @@ module.exports = {
     filename: 'bundle.js',
   },
   devServer: {
-    open: true,
-    inline: true,
-    contentBase: './public/',
+    contentBase: `${__dirname}/tools/`,
+    publicPath: '/__/public/',
+    historyApiFallback: {
+      rewrites: [{ to: '/dev_index.html' }],
+    },
   },
 };
