@@ -1,5 +1,5 @@
 module.exports = {
-  entry: ['./src/app/frontend/index.js'],
+  entry: ['@babel/polyfill', './src/app/frontend/index.js'],
   module: {
     rules: [
       {
@@ -37,7 +37,7 @@ module.exports = {
     contentBase: `${__dirname}/tools/`,
     publicPath: '/__/public/',
     historyApiFallback: {
-      rewrites: [{ to: '/dev_index.html' }],
+      rewrites: [{ from: '/', to: '/dev_index.html' }],
     },
   },
 };

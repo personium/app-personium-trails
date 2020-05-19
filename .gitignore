@@ -62,5 +62,6 @@ typings/
 
 dist
 build
+src/app/frontend/adapters/dummy_data.json
 
 !.gitkeep
