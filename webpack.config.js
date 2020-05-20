@@ -1,5 +1,5 @@
 module.exports = {
-  entry: ['./src/app/frontend/index.js'],
+  entry: ['@babel/polyfill', './src/app/frontend/index.js'],
   module: {
     rules: [
       {
@@ -34,8 +34,10 @@ module.exports = {
     filename: 'bundle.js',
   },
   devServer: {
-    open: true,
-    inline: true,
-    contentBase: './public/',
+    contentBase: `${__dirname}/tools/`,
+    publicPath: '/__/public/',
+    historyApiFallback: {
+      rewrites: [{ from: '/', to: '/dev_index.html' }],
+    },
   },
 };

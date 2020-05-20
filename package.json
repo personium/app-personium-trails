@@ -7,7 +7,8 @@
     "build-bar": "gulp build_bar",
     "prebuild": "gulp copy_statics",
     "build": "gulp webpack",
-    "deploy": "gulp deploy"
+    "deploy": "gulp deploy",
+    "debug": "webpack-dev-server -d --progress --colors --open"
   },
   "repository": {
     "type": "git",
@@ -21,11 +22,13 @@
   "homepage": "https://github.com/yoh1496/personium-blank-app#readme",
   "devDependencies": {
     "@babel/core": "^7.9.6",
+    "@babel/polyfill": "^7.8.7",
     "@babel/preset-env": "^7.9.6",
     "@babel/preset-react": "^7.9.4",
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.1.0",
     "css-loader": "^3.5.3",
+    "date-fns": "^2.14.0",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-prettier": "^3.1.3",
@@ -39,14 +42,18 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.2.0",
+    "recoil": "0.0.7",
     "request": "^2.88.2",
     "request-promise": "^4.2.5",
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^0.88.2",
     "style-loader": "^1.2.1",
     "tunnel": "0.0.6",
+    "url-loader": "^4.1.0",
     "webdav": "git+https://github.com/yoh1496/webdav-client.git#feature/updateProperty",
     "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.11.0",
     "webpack-stream": "^5.2.1",
     "xml2js": "^0.4.23"
   },
