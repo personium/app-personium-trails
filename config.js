@@ -6,8 +6,11 @@ module.exports = {
     CELL_ADMIN_PASS: process.env.PERSONIUM_PASS,
     DIRECTORY_MAPPING: [
       {
-        filePattern: ['src/app/engine/**/*', '!src/app/engine/**/*.example.*'],
-        srcDir: 'src/app/engine',
+        filePattern: [
+          'src/app/engine/front/*',
+          '!src/app/engine/**/*.example.*',
+        ],
+        srcDir: 'src/app/engine/front',
         dstDir: 'front',
         resourceType: 'service',
         meta: {
@@ -19,9 +22,9 @@ module.exports = {
         },
       },
       {
-        filePattern: ['src/app/auth/**/*', '!src/app/auth/**/*.example.*'],
-        srcDir: 'src/app/auth',
-        dstDir: 'Engine',
+        filePattern: ['src/app/engine/auth/*', '!src/app/auth/**/*.example.*'],
+        srcDir: 'src/app/engine/auth',
+        dstDir: 'auth',
         resourceType: 'service',
         meta: {
           language: 'JavaScript',
@@ -29,9 +32,9 @@ module.exports = {
           endPoints: {
             start_oauth2: 'start_oauth2.js',
             receive_redirect: 'receive_redirect.js',
-            getProtectedBoxAccessToken4ExtCell: 'getProtectedBoxAccessToken4ExtCell.js',
+            getProtectedBoxAccessToken4ExtCell:
+              'getProtectedBoxAccessToken4ExtCell.js',
             refreshProtectedBoxAccessToken: 'refreshProtectedBoxAccessToken.js',
-            
           },
         },
       },
