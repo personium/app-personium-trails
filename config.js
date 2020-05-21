@@ -19,6 +19,23 @@ module.exports = {
         },
       },
       {
+        filePattern: ['src/app/auth/**/*', '!src/app/auth/**/*.example.*'],
+        srcDir: 'src/app/auth',
+        dstDir: 'Engine',
+        resourceType: 'service',
+        meta: {
+          language: 'JavaScript',
+          subject: 'tokenAcc',
+          endPoints: {
+            start_oauth2: 'start_oauth2.js',
+            receive_redirect: 'receive_redirect.js',
+            getProtectedBoxAccessToken4ExtCell: 'getProtectedBoxAccessToken4ExtCell.js',
+            refreshProtectedBoxAccessToken: 'refreshProtectedBoxAccessToken.js',
+            
+          },
+        },
+      },
+      {
         filePattern: [
           'src/app/public',
           'src/app/public/**/*',
