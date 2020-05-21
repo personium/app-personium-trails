@@ -1,0 +1,36 @@
+@startuml LocationsScreen
+
+actor User
+participant LocationsScreen
+
+box "User Cell" #LightBlue
+  participant EngineScript
+  participant API
+end box
+
+activate LocationsScreen
+  LocationsScreen -> API : Get Stay OData\n(startTime, endTime)
+  activate API
+  LocationsScreen <-- API : Stay data
+  deactivate API
+  LocationsScreen -> API : Get Move OData\n(startTime, endTime)
+  activate API
+  LocationsScreen <-- API : Move data
+  deactivate API
+  LocationsScreen -> API : PROPFIND directory\n(2019/01/)
+  activate API
+  LocationsScreen <-- API
+  deactivate API
+  note right: あるいは上記3つを\n1つのEngineScriptで実装
+  LocationsScreen -> LocationsScreen : Display data and ACL
+
+User -> LocationsScreen : Disclose data
+  LocationsScreen -> API : ACL s_{startTime}.json
+  activate API
+  LocationsScreen <-- API
+  deactivate API
+  LocationsScreen -> LocationsScreen : Update ACL
+User <-- LocationsScreen
+deactivate LocationsScreen
+
+@enduml
