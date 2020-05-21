@@ -1,0 +1,44 @@
+@startuml ImportScreen
+
+actor User
+participant ImportScreen
+
+box "User Cell" #LightBlue
+  participant EngineScript
+  participant API
+end box
+
+User -> ImportScreen : Upload locations.json
+note right: ひとまずCellManagerで代用し、実装しない
+activate ImportScreen
+  ImportScreen -> API : PUT WebDav
+  activate API
+  ImportScreen <-- API
+  deactivate API
+User <-- ImportScreen
+deactivate ImportScreen
+
+User -> ImportScreen : Start Import
+note right: 少なくともEngineScript側は実装する、画面側は余裕あれば実装
+activate ImportScreen
+  ImportScreen -> EngineScript : Call Import Engine Script\n(target="2019_JANUARY.json")
+  activate EngineScript
+    loop for element of timelineObjects
+      EngineScript -> API : PUT WebDav
+      note right: 元のJSONを2019/01/s_{startTime}.jsonで保存
+      activate API
+      EngineScript <-- API
+      deactivate API
+
+      EngineScript -> API : POST OData
+      note right: OData形式に変換して格納\nbulkでやった方が良いかもしれない
+      activate API
+      EngineScript <-- API
+      deactivate API
+    end
+  ImportScreen <-- EngineScript
+  deactivate EngineScript
+User <-- ImportScreen
+deactivate ImportScreen
+
+@enduml
