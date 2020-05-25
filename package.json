@@ -8,7 +8,7 @@
     "prebuild": "gulp copy_statics",
     "build": "gulp webpack",
     "deploy": "gulp deploy",
-    "debug": "webpack-dev-server -d --progress --colors --open"
+    "debug": "cross-env NODE_ENV=development webpack-dev-server -d --progress --colors --open"
   },
   "repository": {
     "type": "git",
@@ -27,12 +27,14 @@
     "@babel/preset-react": "^7.9.4",
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.1.0",
+    "cross-env": "^7.0.2",
     "css-loader": "^3.5.3",
     "date-fns": "^2.14.0",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-prettier": "^3.1.3",
     "eslint-plugin-react": "^7.20.0",
+    "fetch-mock": "^9.10.1",
     "gulp": "^4.0.2",
     "gulp-zip": "^5.0.1",
     "merge-stream": "^2.0.0",

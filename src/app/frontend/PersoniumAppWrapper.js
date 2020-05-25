@@ -24,7 +24,6 @@ export function PersoniumAppWrapper(props) {
     const currentHash = location.hash.replace(/^#\/?/g, '#');
     console.log({ currentHash });
 
-    let nextPath = '/';
     let targetCell = null;
 
     if (currentHash.startsWith('#cell')) {
@@ -37,30 +36,38 @@ export function PersoniumAppWrapper(props) {
 
       if (target) {
         targetCell = target[1];
+        history.push('/');
       } else {
         throw `Something is wrong. Is hash wrong? ${currentHash}`;
       }
     } else {
       // boot directly
-      nextPath = currentHash;
+      // nextPath = currentHash;
       const lastLoginCell = localStorage.getItem(LS_LAST_LOGIN_CELL);
       targetCell = lastLoginCell ? lastLoginCell : null;
     }
 
-    history.push(nextPath);
+    if (targetCell) {
+      handler.setup(targetCell);
+    } else {
+      // targetCell unknown
+      setError({ message: 'Launch this app from your Home App again.' });
+      return () => {};
+    }
 
     // subscribe authentication state
     // handler.subscribe();
     handler.loginAsync().then(() => {
+      // sined in successfully
+      localStorage.setItem(LS_LAST_LOGIN_CELL, targetCell);
       console.log('logged in');
       if (!unmounted) {
         setLogin(true);
-        setToken({
-          access_token: 'hogehoge',
-        });
+        setToken(handler.accessToken);
       }
 
-      autoRefreshID = setInterval(() => handler.refreshAsync(), 1000);
+      // start refreshing access_token (per 3000 sec)
+      autoRefreshID = setInterval(() => handler.refreshAsync(), 3000 * 1000);
     });
 
     return () => {
@@ -74,7 +81,10 @@ export function PersoniumAppWrapper(props) {
   return (
     <>
       {error ? (
-        <h1>Oops, you cannot sign in</h1>
+        <>
+          <h1>Oops, you cannot sign in</h1>
+          <p>{error.message}</p>
+        </>
       ) : login ? (
         props.children
       ) : (
