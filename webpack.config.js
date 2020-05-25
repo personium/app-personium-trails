@@ -1,5 +1,12 @@
 module.exports = {
-  entry: ['@babel/polyfill', './src/app/frontend/index.js'],
+  entry:
+    process.env.NODE_ENV === 'development'
+      ? [
+          '@babel/polyfill',
+          './tools/setup_fetch_mock.js',
+          './src/app/frontend/index.js',
+        ]
+      : ['@babel/polyfill', './src/app/frontend/index.js'],
   module: {
     rules: [
       {
@@ -39,5 +46,6 @@ module.exports = {
     historyApiFallback: {
       rewrites: [{ from: '/', to: '/dev_index.html' }],
     },
+    openPage: '#cell=https://dev-user.personium.localhost/',
   },
 };
