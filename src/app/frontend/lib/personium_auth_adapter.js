@@ -10,7 +10,7 @@ async function heavyTaskAsync() {
 class PersoniumLoginHandler {
   constructor() {
     this.accessToken = null;
-    this.boxName = null;
+    this.boxUrl = null;
     this._loginAsync = null;
     this._refreshAsync = null;
     this._targetCell = null;
@@ -19,6 +19,13 @@ class PersoniumLoginHandler {
   setup(targetCell) {
     console.log('setup :', targetCell);
     this._targetCell = targetCell;
+  }
+
+  async getBoxUrl() {
+    const res = await fetch(`${this._targetCell}__box`, {
+      headers: { Authorization: `Bearer ${this.accessToken.access_token}` },
+    });
+    return res.headers.get('location');
   }
 
   async loginAsync() {
@@ -40,6 +47,11 @@ class PersoniumLoginHandler {
         .then(jsonDat => {
           this._loginAsync = null;
           this.accessToken = jsonDat;
+          return this.getBoxUrl();
+        })
+        .then(boxUrl => {
+          this.boxUrl = boxUrl;
+          console.log({ boxUrl });
           resolve();
         })
         .catch(reject);
