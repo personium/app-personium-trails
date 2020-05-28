@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import { atom, useRecoilState } from 'recoil';
 
 import { useParams } from 'react-router-dom';
-import { Container, Header, Message, Segment } from 'semantic-ui-react';
+import { Container, Header, Message, Segment, Table } from 'semantic-ui-react';
 
-import { adapter } from '../adapters/locations';
+import { adapter } from '../adapters/locations_direct';
 
 const locationId = atom({
   key: 'userLocationId',
@@ -22,8 +22,8 @@ const _locationInfo = atom({
   default: null,
 });
 
-export default function DetailPage() {
-  const { __id } = useParams();
+export function DetailPage() {
+  const { __id, type } = useParams();
   const [locationInfo, setLocationInfo] = useRecoilState(_locationInfo);
   const [Id, setId] = useRecoilState(locationId);
 
@@ -43,19 +43,45 @@ export default function DetailPage() {
   useEffect(() => {
     console.log({ Id });
     if (Id === null) return;
-    adapter.getDetail(Id).then(result => {
-      setLocationInfo(result);
-    });
+    adapter
+      .getMoveDetail(Id)
+      .catch(res => adapter.getStayDetail(Id))
+      .catch(res => console.log('fetch error', res))
+      .then(result => {
+        setLocationInfo(result);
+      });
   }, [Id]);
 
   return (
     <Container>
       <Header as="h3">Detail of #{Id}</Header>
       <Segment>
-        some information about the location
-        {JSON.stringify(locationInfo)}
+        <Header as="h4">some information about the location</Header>
+        {locationInfo === null ? null : (
+          <Table>
+            <Table.Header>
+              <Table.Row>
+                <Table.HeaderCell>Name</Table.HeaderCell>
+                <Table.HeaderCell>Value</Table.HeaderCell>
+              </Table.Row>
+            </Table.Header>
+
+            <Table.Body>
+              {Object.entries(locationInfo).map(([key, val]) => {
+                if (typeof val === 'object') return null;
+                return (
+                  <Table.Row key={key}>
+                    <Table.Cell>{key}</Table.Cell>
+                    <Table.Cell style={{ 'overflow-wrap': 'anywhere' }}>
+                      {val}
+                    </Table.Cell>
+                  </Table.Row>
+                );
+              })}
+            </Table.Body>
+          </Table>
+        )}
       </Segment>
-      <input type="text" onChange={e => setText(e.target.value)} />
       <Message>
         <Message.Header>
           There may have been contact with the infected person.(example)
@@ -74,6 +100,7 @@ DetailPage.propTypes = {
   match: PropTypes.shape({
     params: PropTypes.shape({
       __id: PropTypes.string,
+      type: PropTypes.string,
     }),
   }),
 };
