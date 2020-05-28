@@ -8,7 +8,7 @@ box "User Cell" #LightBlue
   participant API
 end box
 
-User -> ImportScreen : Upload locations.json
+User -> ImportScreen : Upload 2019_JANUARY.json
 note right: ひとまずCellManagerで代用し、実装しない
 activate ImportScreen
   ImportScreen -> API : PUT WebDav
@@ -21,11 +21,11 @@ deactivate ImportScreen
 User -> ImportScreen : Start Import
 note right: 少なくともEngineScript側は実装する、画面側は余裕あれば実装
 activate ImportScreen
-  ImportScreen -> EngineScript : Call Import Engine Script\n(target="2019_JANUARY.json")
+  ImportScreen -> EngineScript : Call Import Engine Script\n(target="2019/2019_JANUARY.json")
   activate EngineScript
     loop for element of timelineObjects
       EngineScript -> API : PUT WebDav
-      note right: 元のJSONを2019/01/s_{startTime}.jsonで保存
+      note right: 元のJSONを2019/0101/s_{startTime}.jsonで保存
       activate API
       EngineScript <-- API
       deactivate API

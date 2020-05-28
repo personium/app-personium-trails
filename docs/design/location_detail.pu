@@ -1,0 +1,26 @@
+@startuml LocationDetailScreen
+
+actor User
+participant LocationDetailScreen
+
+box "User Cell" #LightBlue
+  participant EngineScript
+  participant API
+end box
+
+box "Organization" #LightGreen
+  participant orgAPI
+end box
+
+activate LocationDetailScreen
+  LocationDetailScreen -> API : GET location data file\n(startTime)
+  activate API
+  LocationDetailScreen <-- API
+  deactivate API
+  LocationDetailScreen -> orgAPI : GET infection data\n(startTime, location)
+  activate orgAPI
+  LocationDetailScreen <-- orgAPI
+  deactivate orgAPI
+  LocationDetailScreen -> LocationDetailScreen : Display location & infection data
+
+@enduml
