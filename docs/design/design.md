@@ -16,8 +16,8 @@
 ## Screens
 
 - import
-- locations list
-- daily location
+- location list
+- location detail
 
 ## Sequences
 
@@ -29,6 +29,6 @@
 
 ![locations](locations/LocationsScreen.png)
 
-### Location detail
+### Location detail Screen
 
-TODO
+![locations](location_detail/LocationDetailScreen.png)

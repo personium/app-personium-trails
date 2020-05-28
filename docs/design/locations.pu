@@ -17,11 +17,15 @@ activate LocationsScreen
   activate API
   LocationsScreen <-- API : Move data
   deactivate API
-  LocationsScreen -> API : PROPFIND directory\n(2019/01/)
+  LocationsScreen -> API : PROPFIND directory\n(2019/0101)
   activate API
   LocationsScreen <-- API
   deactivate API
-  note right: あるいは上記3つを\n1つのEngineScriptで実装
+  LocationsScreen -> API : PROPFIND directory\n(2019/0102)
+  activate API
+  LocationsScreen <-- API
+  deactivate API
+  note right: あるいは上記4つを\n1つのEngineScriptで実装
   LocationsScreen -> LocationsScreen : Display data and ACL
 
 User -> LocationsScreen : Disclose data
