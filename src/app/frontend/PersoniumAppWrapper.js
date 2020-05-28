@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import { isLogin, isError, tokens } from './common/auth';
 import { handler } from './lib/personium_auth_adapter';
 import { useHistory } from 'react-router-dom';
@@ -8,7 +8,7 @@ import { useHistory } from 'react-router-dom';
 export function PersoniumAppWrapper(props) {
   const [login, setLogin] = useRecoilState(isLogin);
   const [error, setError] = useRecoilState(isError);
-  const [token, setToken] = useRecoilState(tokens);
+  const setToken = useSetRecoilState(tokens);
   const history = useHistory();
 
   useEffect(() => {
