@@ -5,9 +5,9 @@ import { atom, selector, useRecoilValue, useSetRecoilState } from 'recoil';
 import { useParams } from 'react-router-dom';
 import { Item, Container, Header } from 'semantic-ui-react';
 
-import { adapter } from '../adapters/locations';
-import StayItem from '../parts/StayItem';
-import VisitItem from '../parts/VisitItem';
+import { adapter } from '../adapters/locations_direct';
+import { StayItem } from '../parts/StayItem';
+import { MoveItem } from '../parts/MoveItem';
 
 const locationQuery = atom({
   key: 'searchLocationQuery',
@@ -22,7 +22,6 @@ const locationResults = selector({
   key: 'searchLocationResult',
   get: async ({ get }) => {
     const query = get(locationQuery);
-    console.log(query);
     if (query.year === null || query.month === null || query.day === null) {
       console.log('null');
       return await [];
@@ -31,18 +30,21 @@ const locationResults = selector({
     const queryDate = new Date(query.year, query.month - 1, query.day);
     return await Promise.all([
       adapter.getStaysByDate(queryDate),
-      adapter.getVisitsByDate(queryDate),
+      adapter.getMovesByDate(queryDate),
     ])
-      .then(results => {
-        console.log(results);
-        return results;
-      })
       .then(results => [].concat(...results))
-      .then(results => results.sort((a, b) => a.startTime - b.startTime));
+      .then(results =>
+        results.map(item => ({
+          timestampms: parseInt(item.startTime.match(/\/Date\((\d+)\)\//)[1]),
+          dat: item,
+        }))
+      )
+      .then(results => results.sort((a, b) => a.timestampms - b.timestampms))
+      .then(results => results.map(item => item.dat));
   },
 });
 
-export default function LocationComponent() {
+export function LocationPage() {
   const setQuery = useSetRecoilState(locationQuery);
   const locations = useRecoilValue(locationResults);
 
@@ -69,12 +71,12 @@ export default function LocationComponent() {
       <Suspense fallback={<h1>loading</h1>}>
         <Item.Group link>
           {(() => {
-            console.log(locations.length);
+            console.log(locations);
             return locations.map(item => {
               if ('placeId' in item) {
                 return <StayItem dat={item} key={`list-${item.__id}`} />;
               } else {
-                return <VisitItem dat={item} key={`list-${item.__id}`} />;
+                return <MoveItem dat={item} key={`list-${item.__id}`} />;
               }
             });
           })()}
@@ -84,7 +86,7 @@ export default function LocationComponent() {
   );
 }
 
-LocationComponent.propTypes = {
+LocationPage.propTypes = {
   match: PropTypes.shape({
     params: PropTypes.shape({
       year: PropTypes.string,

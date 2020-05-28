@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import { Item, Checkbox } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 
-export function StayItem(props) {
-  const { __id, name, startTime: _startTime, endTime: _endTime } = props.dat;
+export function MoveItem(props) {
+  const { __id, startTime: _startTime, endTime: _endTime } = props.dat;
   const startTime = parseInt(_startTime.match(/\/Date\((\d+)\)\//)[1]);
   const endTime = parseInt(_endTime.match(/\/Date\((\d+)\)\//)[1]);
 
@@ -32,9 +32,11 @@ export function StayItem(props) {
   const strPublic = isPublic ? 'public' : 'private';
 
   return (
-    <Item as={Link} to={`/detail/${__id}`}>
+    <Item>
       <Item.Content verticalAlign="middle">
-        <Item.Header>{name}</Item.Header>
+        <Item.Header as={Link} to={`/detail/${__id}`}>
+          MOVE
+        </Item.Header>
         <Item.Meta>#{__id}</Item.Meta>
         <Item.Extra>
           <div>
@@ -55,14 +57,14 @@ export function StayItem(props) {
   );
 }
 
-StayItem.propTypes = {
+MoveItem.propTypes = {
   dat: PropTypes.shape({
     __id: PropTypes.string,
     startTime: PropTypes.string,
     endTime: PropTypes.string,
-    latitudeE7: PropTypes.number,
-    longitudeE7: PropTypes.number,
-    name: PropTypes.string,
-    placeId: PropTypes.string,
+    sLatitudeE7: PropTypes.number,
+    sLongitudeE7: PropTypes.number,
+    eLatitudeE7: PropTypes.number,
+    eLongitudeE7: PropTypes.number,
   }),
 };

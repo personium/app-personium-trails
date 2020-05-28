@@ -1,20 +1,27 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import { isLogin, isError, tokens } from './common/auth';
+import { atomLocalMode } from './common/state';
 import { handler } from './lib/personium_auth_adapter';
 import { useHistory } from 'react-router-dom';
 
 export function PersoniumAppWrapper(props) {
   const [login, setLogin] = useRecoilState(isLogin);
   const [error, setError] = useRecoilState(isError);
-  const [token, setToken] = useRecoilState(tokens);
+  const setLocalMode = useSetRecoilState(atomLocalMode);
+  const setToken = useSetRecoilState(tokens);
   const history = useHistory();
 
   useEffect(() => {
     let unmounted = false;
     let autoRefreshID = -1;
     console.log('mounted PersoniumAppWrapper');
+
+    setLocalMode(
+      () =>
+        location.hostname === 'localhost' || location.hostname === '127.0.0.1'
+    );
 
     // Boot Script
     const LS_LAST_LOGIN_CELL = 'lastLoginCell';

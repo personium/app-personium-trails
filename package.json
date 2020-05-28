@@ -39,6 +39,7 @@
     "gulp-zip": "^5.0.1",
     "merge-stream": "^2.0.0",
     "mime-types": "^2.1.27",
+    "odata": "^1.0.4",
     "prettier": "^1.19.1",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
