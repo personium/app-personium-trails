@@ -1,9 +1,10 @@
 import React, { Suspense } from 'react';
 import { Route, Link } from 'react-router-dom';
 
-import LocationPage from './pages/LocationPage';
-import DetailPage from './pages/DetailPage';
+import { LocationPage } from './pages/LocationPage';
+import { DetailPage } from './pages/DetailPage';
 import { ProfilePage } from './pages/ProfilePage';
+import { ImportPage } from './pages/ImportPage';
 
 import { Menu, Container } from 'semantic-ui-react';
 
@@ -33,6 +34,9 @@ export default function App() {
         </Route>
         <Route path="/profile" exact>
           <ProfilePage />
+        </Route>
+        <Route path="/import" exact>
+          <ImportPage />
         </Route>
       </Container>
     </>
