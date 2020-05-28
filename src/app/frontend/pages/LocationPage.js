@@ -22,7 +22,6 @@ const locationResults = selector({
   key: 'searchLocationResult',
   get: async ({ get }) => {
     const query = get(locationQuery);
-    console.log(query);
     if (query.year === null || query.month === null || query.day === null) {
       console.log('null');
       return await [];
@@ -33,10 +32,6 @@ const locationResults = selector({
       adapter.getStaysByDate(queryDate),
       adapter.getVisitsByDate(queryDate),
     ])
-      .then(results => {
-        console.log(results);
-        return results;
-      })
       .then(results => [].concat(...results))
       .then(results => results.sort((a, b) => a.startTime - b.startTime));
   },
@@ -69,7 +64,7 @@ export default function LocationComponent() {
       <Suspense fallback={<h1>loading</h1>}>
         <Item.Group link>
           {(() => {
-            console.log(locations.length);
+            console.log(locations);
             return locations.map(item => {
               if ('placeId' in item) {
                 return <StayItem dat={item} key={`list-${item.__id}`} />;

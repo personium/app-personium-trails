@@ -19,15 +19,13 @@ export default function VisitItem(props) {
 }
 
 VisitItem.propTypes = {
-  dat: PropTypes.objectOf(
-    PropTypes.shape({
-      __id: PropTypes.string,
-      StartTime: PropTypes.number,
-      endTime: PropTypes.number,
-      sLatitudeE7: PropTypes.number,
-      sLongitudeE7: PropTypes.number,
-      eLatitudeE7: PropTypes.string,
-      eLongitudeE7: PropTypes.string,
-    })
-  ),
+  dat: PropTypes.shape({
+    __id: PropTypes.string,
+    StartTime: PropTypes.number,
+    endTime: PropTypes.number,
+    sLatitudeE7: PropTypes.number,
+    sLongitudeE7: PropTypes.number,
+    eLatitudeE7: PropTypes.number,
+    eLongitudeE7: PropTypes.number,
+  }),
 };

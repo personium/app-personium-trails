@@ -1,73 +1,10 @@
-import React, { useEffect } from 'react';
-import PropTypes from 'prop-types';
+import React, { useEffect, useState } from 'react';
 import { isLogin, tokens } from '../common/auth';
 import { atom, useRecoilValue, useRecoilState } from 'recoil';
 import { Segment, Table } from 'semantic-ui-react';
-
-function TokenView({ token }) {
-  return (
-    <Table>
-      <Table.Header>
-        <Table.Row>
-          <Table.HeaderCell>Name</Table.HeaderCell>
-          <Table.HeaderCell>Value</Table.HeaderCell>
-        </Table.Row>
-      </Table.Header>
-
-      <Table.Body>
-        {Object.entries(token).map(([key, val]) => {
-          return (
-            <Table.Row key={key}>
-              <Table.Cell>{key}</Table.Cell>
-              <Table.Cell>{val}</Table.Cell>
-            </Table.Row>
-          );
-        })}
-      </Table.Body>
-    </Table>
-  );
-}
-
-TokenView.propTypes = {
-  token: PropTypes.shape(),
-};
-
-function TokenIntrospect({ introspection }) {
-  return (
-    <Table>
-      <Table.Header>
-        <Table.Row>
-          <Table.HeaderCell>Name</Table.HeaderCell>
-          <Table.HeaderCell>Value</Table.HeaderCell>
-        </Table.Row>
-      </Table.Header>
-
-      <Table.Body>
-        {Object.entries(introspection).map(([key, val]) => {
-          return (
-            <Table.Row key={key}>
-              <Table.Cell>{key}</Table.Cell>
-              <Table.Cell>{val}</Table.Cell>
-            </Table.Row>
-          );
-        })}
-      </Table.Body>
-    </Table>
-  );
-}
-
-TokenIntrospect.propTypes = {
-  introspection: {
-    active: PropTypes.bool,
-    client_id: PropTypes.string,
-    exp: PropTypes.number,
-    iat: PropTypes.number,
-    sub: PropTypes.string,
-    aud: PropTypes.string,
-    iss: PropTypes.string,
-    p_roles: PropTypes.arrayOf(PropTypes.string),
-  },
-};
+import { handler } from '../lib/personium_auth_adapter';
+import { TokenView } from '../parts/TokenView';
+import { TokenIntrospect } from '../parts/TokenIntrospect';
 
 const _introspection = atom({
   key: 'profileTokenIntrospection',
@@ -78,14 +15,28 @@ export function ProfilePage() {
   const login = useRecoilValue(isLogin);
   const token = useRecoilValue(tokens);
   const [introspection, setIntrospection] = useRecoilState(_introspection);
+  const [userData, setUserData] = useState(null);
 
-  useEffect(() => {}, [token]);
-  console.log({ introspection });
-  console.log({ introspection: introspection !== null });
+  useEffect(() => {
+    fetch(`${handler.boxUrl}secret.txt`, {
+      headers: {
+        Authorization: `Bearer ${handler.accessToken.access_token}`,
+      },
+    })
+      .then(res => res.text())
+      .then(text => setUserData(text));
+    return () => setUserData(null);
+  }, [token]);
 
   return (
     <>
       <h1>Profile</h1>
+      <Segment>
+        <h3>Sample GET</h3>
+        <p>Getting secret.txt</p>
+        <p>{userData ? userData : 'loading'}</p>
+      </Segment>
+
       <Segment>
         <h3>Tokens</h3>
         {login === true ? (
@@ -99,8 +50,7 @@ export function ProfilePage() {
         {introspection === null ? (
           <p>loading</p>
         ) : (
-          // <TokenIntrospect introspection={introspection} />
-          console.log('hofe')
+          <TokenIntrospect introspection={introspection} />
         )}
       </Segment>
     </>

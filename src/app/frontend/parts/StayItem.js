@@ -19,15 +19,13 @@ export default function StayItem(props) {
 }
 
 StayItem.propTypes = {
-  dat: PropTypes.objectOf(
-    PropTypes.shape({
-      __id: PropTypes.string,
-      startTime: PropTypes.number,
-      endTime: PropTypes.number,
-      latitudeE7: PropTypes.number,
-      longitudeE7: PropTypes.number,
-      name: PropTypes.string,
-      placeId: PropTypes.string,
-    })
-  ),
+  dat: PropTypes.shape({
+    __id: PropTypes.string,
+    startTime: PropTypes.number,
+    endTime: PropTypes.number,
+    latitudeE7: PropTypes.number,
+    longitudeE7: PropTypes.number,
+    name: PropTypes.string,
+    placeId: PropTypes.string,
+  }),
 };
