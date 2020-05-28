@@ -64,6 +64,8 @@ fetchMock.get(
   })
 );
 
+fetchMock.get(`${DEV_CELL}${BOX_NAME}/secret.txt`, 'secret');
+
 fetchMock.get(`begin:${DEV_CELL}${BOX_NAME}/current/Stay?`, (url, opts) => {
   const decoded = decodeURI(url);
   const nums = decoded.match(/\d+/g).map(item => parseInt(item));
