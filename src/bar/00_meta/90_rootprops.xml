@@ -3,9 +3,26 @@
         <href>personium-localbox:/</href>
         <propstat>
             <prop>
+                <creationdate>2020-05-27T23:21:04.166+0900</creationdate>
+                <getlastmodified>Wed, 27 May 2020 14:21:04 GMT</getlastmodified>
                 <resourcetype>
-                    <collection />
+                    <collection/>
                 </resourcetype>
+                <acl xml:base="https://app-personium-trails.appdev.personium.io/__role/__/" xmlns:p="urn:x-personium:xmlns"/>
+            </prop>
+            <status>HTTP/1.1 200 OK</status>
+        </propstat>
+    </response>
+    <response>
+        <href>personium-localbox:/exported</href>
+        <propstat>
+            <prop>
+                <creationdate>2020-05-28T12:20:26.307+0900</creationdate>
+                <getlastmodified>Thu, 28 May 2020 03:20:26 GMT</getlastmodified>
+                <resourcetype>
+                    <collection/>
+                </resourcetype>
+                <acl xml:base="https://app-personium-trails.appdev.personium.io/__role/__/" xmlns:p="urn:x-personium:xmlns"/>
             </prop>
             <status>HTTP/1.1 200 OK</status>
         </propstat>
@@ -14,10 +31,143 @@
         <href>personium-localbox:/current</href>
         <propstat>
             <prop>
+                <creationdate>2020-05-27T23:21:04.297+0900</creationdate>
+                <getlastmodified>Wed, 27 May 2020 14:21:04 GMT</getlastmodified>
                 <resourcetype>
-                    <collection />
-                    <p:odata xmlns:p="urn:x-personium:xmlns" />
+                    <collection/>
+                    <p:odata xmlns:p="urn:x-personium:xmlns"/>
                 </resourcetype>
+                <acl xml:base="https://app-personium-trails.appdev.personium.io/__role/__/" xmlns:p="urn:x-personium:xmlns"/>
+            </prop>
+            <status>HTTP/1.1 200 OK</status>
+        </propstat>
+    </response>
+    <response>
+        <href>personium-localbox:/imported</href>
+        <propstat>
+            <prop>
+                <creationdate>2020-05-27T23:26:53.973+0900</creationdate>
+                <getlastmodified>Wed, 27 May 2020 14:26:53 GMT</getlastmodified>
+                <resourcetype>
+                    <collection/>
+                </resourcetype>
+                <acl xml:base="https://app-personium-trails.appdev.personium.io/__role/__/" xmlns:p="urn:x-personium:xmlns"/>
+            </prop>
+            <status>HTTP/1.1 200 OK</status>
+        </propstat>
+    </response>
+    <response>
+        <href>personium-localbox:/Engine</href>
+        <propstat>
+            <prop>
+                <creationdate>2020-05-27T23:30:22.724+0900</creationdate>
+                <getlastmodified>Thu, 28 May 2020 03:14:07 GMT</getlastmodified>
+                <resourcetype>
+                    <collection/>
+                    <p:service xmlns:p="urn:x-personium:xmlns"/>
+                </resourcetype>
+                <acl xml:base="https://app-personium-trails.appdev.personium.io/__role/__/" xmlns:p="urn:x-personium:xmlns"/>
+                <p:service language="JavaScript" subject="engine" xmlns:p="urn:x-personium:xmlns" xmlns:D="DAV:" xmlns:Z="http://www.w3.com/standards/z39.50/">
+                    <p:path name="process_imported_data" src="process_imported_data.js"/>
+                </p:service>
+            </prop>
+            <status>HTTP/1.1 200 OK</status>
+        </propstat>
+    </response>
+    <response>
+        <href>personium-localbox:/Engine/__src</href>
+        <propstat>
+            <prop>
+                <creationdate>2020-05-27T23:30:22.737+0900</creationdate>
+                <getlastmodified>Wed, 27 May 2020 14:30:22 GMT</getlastmodified>
+                <resourcetype>
+                    <collection/>
+                </resourcetype>
+                <acl xml:base="https://app-personium-trails.appdev.personium.io/__role/__/" xmlns:p="urn:x-personium:xmlns"/>
+            </prop>
+            <status>HTTP/1.1 200 OK</status>
+        </propstat>
+    </response>
+    <response>
+        <href>personium-localbox:/Engine/__src/underscore.js</href>
+        <propstat>
+            <prop>
+                <creationdate>2020-05-27T23:46:47.791+0900</creationdate>
+                <getcontentlength>58343</getcontentlength>
+                <getcontenttype>text/javascript</getcontenttype>
+                <getlastmodified>Wed, 27 May 2020 14:46:47 GMT</getlastmodified>
+                <resourcetype/>
+                <acl xml:base="https://app-personium-trails.appdev.personium.io/__role/__/" xmlns:p="urn:x-personium:xmlns"/>
+            </prop>
+            <status>HTTP/1.1 200 OK</status>
+        </propstat>
+    </response>
+    <response>
+        <href>personium-localbox:/Engine/__src/acc_info.js</href>
+        <propstat>
+            <prop>
+                <creationdate>2020-05-27T23:51:59.602+0900</creationdate>
+                <getcontentlength>558</getcontentlength>
+                <getcontenttype>text/javascript</getcontenttype>
+                <getlastmodified>Wed, 27 May 2020 14:51:59 GMT</getlastmodified>
+                <resourcetype/>
+                <acl xml:base="https://app-personium-trails.appdev.personium.io/__role/__/" xmlns:p="urn:x-personium:xmlns"/>
+            </prop>
+            <status>HTTP/1.1 200 OK</status>
+        </propstat>
+    </response>
+    <response>
+        <href>personium-localbox:/Engine/__src/process_imported_data.js</href>
+        <propstat>
+            <prop>
+                <creationdate>2020-05-28T12:09:02.271+0900</creationdate>
+                <getcontentlength>9319</getcontentlength>
+                <getcontenttype>text/javascript</getcontenttype>
+                <getlastmodified>Thu, 28 May 2020 06:01:51 GMT</getlastmodified>
+                <resourcetype/>
+                <acl xml:base="https://app-personium-trails.appdev.personium.io/__role/__/" xmlns:p="urn:x-personium:xmlns"/>
+            </prop>
+            <status>HTTP/1.1 200 OK</status>
+        </propstat>
+    </response>
+    <response>
+        <href>personium-localbox:/Engine/__src/moment_timezone_with_data.js</href>
+        <propstat>
+            <prop>
+                <creationdate>2020-05-27T23:38:38.227+0900</creationdate>
+                <getcontentlength>194829</getcontentlength>
+                <getcontenttype>text/javascript</getcontenttype>
+                <getlastmodified>Wed, 27 May 2020 14:38:38 GMT</getlastmodified>
+                <resourcetype/>
+                <acl xml:base="https://app-personium-trails.appdev.personium.io/__role/__/" xmlns:p="urn:x-personium:xmlns"/>
+            </prop>
+            <status>HTTP/1.1 200 OK</status>
+        </propstat>
+    </response>
+    <response>
+        <href>personium-localbox:/Engine/__src/moment.js</href>
+        <propstat>
+            <prop>
+                <creationdate>2020-05-27T23:38:32.251+0900</creationdate>
+                <getcontentlength>146867</getcontentlength>
+                <getcontenttype>text/javascript</getcontenttype>
+                <getlastmodified>Wed, 27 May 2020 14:38:32 GMT</getlastmodified>
+                <resourcetype/>
+                <acl xml:base="https://app-personium-trails.appdev.personium.io/__role/__/" xmlns:p="urn:x-personium:xmlns"/>
+            </prop>
+            <status>HTTP/1.1 200 OK</status>
+        </propstat>
+    </response>
+    <response>
+        <href>personium-localbox:/Engine/__src/personium.js</href>
+        <propstat>
+            <prop>
+                <creationdate>2020-05-27T23:38:44.645+0900</creationdate>
+                <getcontentlength>10249</getcontentlength>
+                <getcontenttype>text/javascript</getcontenttype>
+                <getlastmodified>Wed, 27 May 2020 14:38:44 GMT</getlastmodified>
+                <resourcetype/>
+                <acl xml:base="https://app-personium-trails.appdev.personium.io/__role/__/" xmlns:p="urn:x-personium:xmlns"/>
             </prop>
             <status>HTTP/1.1 200 OK</status>
         </propstat>
