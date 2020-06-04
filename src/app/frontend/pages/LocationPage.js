@@ -1,13 +1,20 @@
-import React, { useEffect, Suspense } from 'react';
+import React, { useEffect, Suspense, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { atom, selector, useRecoilValue, useSetRecoilState } from 'recoil';
 
 import { useParams } from 'react-router-dom';
 import { Item, Container, Header } from 'semantic-ui-react';
 
-import { adapter } from '../adapters/locations_direct';
+import { authState } from '../lib/personium_auth_adapter';
+import { adapter, getYMD } from '../adapters/locations_direct';
+
 import { StayItem } from '../parts/StayItem';
 import { MoveItem } from '../parts/MoveItem';
+
+import {
+  locationACLStatusState,
+  useLocationACLSubscribe,
+} from '../common/location_stat';
 
 const locationQuery = atom({
   key: 'searchLocationQuery',
@@ -27,27 +34,37 @@ const locationResults = selector({
       return await [];
     }
 
-    const queryDate = new Date(query.year, query.month - 1, query.day);
+    const { year, month, day } = query;
+
+    const queryDate = new Date(year, month - 1, day);
     return await Promise.all([
       adapter.getStaysByDate(queryDate),
       adapter.getMovesByDate(queryDate),
+      adapter.getTimelineByDate(queryDate),
     ])
-      .then(results => [].concat(...results))
-      .then(results =>
-        results.map(item => ({
-          timestampms: parseInt(item.startTime.match(/\/Date\((\d+)\)\//)[1]),
-          dat: item,
-        }))
-      )
+      .then(([stayDat, moveDat, stat]) => {
+        console.log(stat);
+        const _results = [].concat(stayDat, moveDat).map(item => {
+          // resolve filename
+          const timems = parseInt(item.startTime.match(/\/Date\((\d+)\)\//)[1]);
+          const filename = `${'placeId' in item ? 's' : 'm'}_${timems}.json`;
+          const folder = `${authState.boxUrl}exported/${getYMD(timems)}/`;
+          const filepath = `${folder}${filename}`;
+          console.log({ item, stat: stat.get(filepath) });
+          return {
+            timestampms: timems,
+            dat: item,
+          };
+        });
+        return _results;
+      })
       .then(results => results.sort((a, b) => a.timestampms - b.timestampms))
       .then(results => results.map(item => item.dat));
   },
 });
 
-export function LocationPage() {
+function LocationFilter() {
   const setQuery = useSetRecoilState(locationQuery);
-  const locations = useRecoilValue(locationResults);
-
   const { year, month, day } = useParams();
 
   useEffect(() => {
@@ -59,27 +76,72 @@ export function LocationPage() {
   }, [year, month, day]);
 
   return (
+    <Header as="h3">
+      Locations on{' '}
+      {new Date(
+        Number(year),
+        Number(month - 1),
+        Number(day)
+      ).toLocaleDateString()}
+    </Header>
+  );
+}
+
+function LocationItem({ item }) {
+  const timems = parseInt(item.startTime.match(/\/Date\((\d+)\)\//)[1]);
+  const filename = `${'placeId' in item ? 's' : 'm'}_${timems}.json`;
+  const folder = `${authState.boxUrl}exported/${getYMD(timems)}/`;
+  const filepath = `${folder}${filename}`;
+
+  const {
+    setLocationACLPrivate,
+    setLocationACLPublic,
+  } = useLocationACLSubscribe(item.__id, filepath);
+  const aclStatus = useRecoilValue(locationACLStatusState(item.__id));
+
+  const onClick = useCallback(() => {
+    if (aclStatus === 'loading') return;
+    if (aclStatus === 'public') {
+      setLocationACLPrivate();
+    } else {
+      setLocationACLPublic();
+    }
+  }, [aclStatus]);
+
+  if ('placeId' in item) {
+    return (
+      <StayItem
+        dat={item}
+        key={`list-${item.__id}`}
+        isPublic={aclStatus === 'public'}
+        isLoading={aclStatus === 'loading'}
+        onClick={onClick}
+      />
+    );
+  } else {
+    return (
+      <MoveItem
+        dat={item}
+        key={`list-${item.__id}`}
+        isPublic={aclStatus === 'public'}
+        isLoading={aclStatus === 'loading'}
+        onClick={onClick}
+      />
+    );
+  }
+}
+
+export function LocationPage() {
+  const locations = useRecoilValue(locationResults);
+
+  return (
     <Container>
-      <Header as="h3">
-        Locations on{' '}
-        {new Date(
-          Number(year),
-          Number(month - 1),
-          Number(day)
-        ).toLocaleDateString()}
-      </Header>
+      <LocationFilter />
       <Suspense fallback={<h1>loading</h1>}>
-        <Item.Group link>
-          {(() => {
-            console.log(locations);
-            return locations.map(item => {
-              if ('placeId' in item) {
-                return <StayItem dat={item} key={`list-${item.__id}`} />;
-              } else {
-                return <MoveItem dat={item} key={`list-${item.__id}`} />;
-              }
-            });
-          })()}
+        <Item.Group>
+          {locations.map(item => (
+            <LocationItem item={item} key={`location_item_${item.__id}`} />
+          ))}
         </Item.Group>
       </Suspense>
     </Container>

@@ -1,31 +1,107 @@
-async function heavyTaskAsync() {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      console.log('heavyTaskAsync');
-      resolve();
-    }, 3000);
-  });
-}
-
-class PersoniumLoginHandler {
+class PersoniumAuthState {
   constructor() {
     this.accessToken = null;
     this.boxUrl = null;
-    this._loginAsync = null;
-    this._refreshAsync = null;
     this._targetCell = null;
   }
+}
 
-  setup(targetCell) {
-    console.log('setup :', targetCell);
+export const authState = new PersoniumAuthState();
+
+function composeFormBody(data) {
+  return Object.entries(data)
+    .map(([key, val]) => `${key}=${encodeURIComponent(val)}`)
+    .join('&');
+}
+
+async function getBoxUrl(targetCell, { access_token }) {
+  const res = await fetch(`${targetCell}__box`, {
+    headers: { Authorization: `Bearer ${access_token}` },
+  });
+  return res.headers.get('location');
+}
+
+class PersoniumLoginROPC {
+  constructor(targetCell, targetBoxName, username, password) {
+    this._loginAsync = null;
+    this._refreshAsync = null;
+    this._username = username;
+    this._password = password;
     this._targetCell = targetCell;
+    this._boxUrl = `${targetCell}${targetBoxName}/`;
+  }
+  async loginAsync() {
+    if (this._loginAsync !== null) {
+      console.log('`loginAsync` is already started');
+      return this._loginAsync;
+    }
+
+    console.log('`loginAsync` is started newly');
+
+    return (this._loginAsync = new Promise((resolve, reject) => {
+      const data = {
+        grant_type: 'password',
+        username: this._username,
+        password: this._password,
+      };
+      fetch(`${this._targetCell}__token`, {
+        credentials: 'include',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: composeFormBody(data),
+      })
+        .then(res => res.json())
+        .then(jsonDat => {
+          this._loginAsync = null;
+          authState.accessToken = jsonDat;
+          authState.boxUrl = this._boxUrl;
+          authState._targetCell = this._targetCell;
+          console.log({ authState });
+          resolve();
+        })
+        .catch(reject);
+    }));
   }
 
-  async getBoxUrl() {
-    const res = await fetch(`${this._targetCell}__box`, {
-      headers: { Authorization: `Bearer ${this.accessToken.access_token}` },
-    });
-    return res.headers.get('location');
+  async refreshAsync() {
+    if (this._refreshAsync !== null) {
+      console.log('`refreshAsync` is already started');
+      return this._refreshAsync;
+    }
+
+    console.log('`refreshAsync` is started newly');
+    return (this._refreshAsync = new Promise((resolve, reject) => {
+      const data = {
+        grant_type: 'refresh_token',
+        refresh_token: authState.accessToken.refresh_token,
+      };
+      fetch(`${this._targetCell}__token`, {
+        credentials: 'include',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: composeFormBody(data),
+      })
+        .then(res => res.json())
+        .then(jsonDat => {
+          this._refreshAsync = null;
+          authState.accessToken = jsonDat;
+          resolve();
+        })
+        .catch(reject);
+    }));
+  }
+}
+
+class PersoniumLoginHandler {
+  constructor(targetCell) {
+    this._loginAsync = null;
+    this._refreshAsync = null;
+    this.boxUrl = null;
+    this._targetCell = targetCell;
   }
 
   async loginAsync() {
@@ -46,12 +122,12 @@ class PersoniumLoginHandler {
         .then(res => res.json())
         .then(jsonDat => {
           this._loginAsync = null;
-          this.accessToken = jsonDat;
-          return this.getBoxUrl();
+          authState.accessToken = jsonDat;
+          return getBoxUrl(this._targetCell, jsonDat);
         })
         .then(boxUrl => {
-          this.boxUrl = boxUrl;
-          console.log({ boxUrl });
+          authState.boxUrl = boxUrl;
+          console.log({ authState });
           resolve();
         })
         .catch(reject);
@@ -67,7 +143,7 @@ class PersoniumLoginHandler {
     console.log('`refreshAsync` is started newly');
     return (this._refreshAsync = new Promise((resolve, reject) => {
       const data = {
-        refresh_token: this.accessToken.refresh_token,
+        refresh_token: authState.accessToken.refresh_token,
         p_target: this._targetCell,
       };
       fetch(`/__/auth/refreshProtectedBoxAccessToken`, {
@@ -76,14 +152,12 @@ class PersoniumLoginHandler {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: Object.entries(data)
-          .map(([key, val]) => `${key}=${encodeURIComponent(val)}`)
-          .join('&'),
+        body: composeFormBody(data),
       })
         .then(res => res.json())
         .then(jsonDat => {
           this._refreshAsync = null;
-          this.accessToken = jsonDat;
+          authState.accessToken = jsonDat;
           resolve();
         })
         .catch(reject);
@@ -91,4 +165,4 @@ class PersoniumLoginHandler {
   }
 }
 
-export const handler = new PersoniumLoginHandler();
+export { PersoniumLoginROPC, PersoniumLoginHandler };
