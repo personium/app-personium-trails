@@ -74,7 +74,7 @@ class LocationDirectAdapter {
     return Promise.all(
       days.map(ymd =>
         statDirectory(
-          `${this.current_box_url}exported/${ymd}`,
+          `${this.current_box_url}locations/${ymd}`,
           this.current_access_token
         )
       )

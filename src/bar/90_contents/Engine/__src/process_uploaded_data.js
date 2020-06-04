@@ -69,7 +69,7 @@ var _processData = function (timelineObjects) {
         }).value();
     var data = s_list[0] || m_list[0]; // todo default year
     var box = _p.localbox();
-    var col = box.col("exported");
+    var col = box.col("locations");
     var colYear = _createYearFolder(col, parseInt(data.duration.startTimestampMs));
     var results = {
         status: "success",
@@ -82,7 +82,7 @@ var _processData = function (timelineObjects) {
     _.each(s_list, function(item){
         var timestampMs = parseInt(item.duration.startTimestampMs);
         _createMMDDFolder(colYear, timestampMs);
-        var path = "exported/" + moment.tz(timestampMs, "Europe/London").format("YYYY/MMDD") + "/s_" + timestampMs + ".json";
+        var path = "locations/" + moment.tz(timestampMs, "Europe/London").format("YYYY/MMDD") + "/s_" + timestampMs + ".json";
         _p.localbox().put({
             path: path,
             data: JSON.stringify(item),
@@ -97,7 +97,7 @@ var _processData = function (timelineObjects) {
     _.each(m_list, function(item){
         var timestampMs = parseInt(item.duration.startTimestampMs);
         _createMMDDFolder(colYear, timestampMs);
-        var path = "exported/" + moment.tz(timestampMs, "Europe/London").format("YYYY/MMDD") + "/m_" + timestampMs + ".json";
+        var path = "locations/" + moment.tz(timestampMs, "Europe/London").format("YYYY/MMDD") + "/m_" + timestampMs + ".json";
         _p.localbox().put({
             path: path,
             data: JSON.stringify(item),

@@ -14,7 +14,7 @@
         </propstat>
     </response>
     <response>
-        <href>personium-localbox:/exported</href>
+        <href>personium-localbox:/locations</href>
         <propstat>
             <prop>
                 <creationdate>2020-05-28T12:20:26.307+0900</creationdate>
