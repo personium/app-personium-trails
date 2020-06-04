@@ -35,7 +35,7 @@ export function ProfilePage() {
 
   useEffect(() => {
     const { access_token } = handler.accessToken;
-    statDirectory(`${handler.boxUrl}imported/`, access_token).then(res => {
+    statDirectory(`${handler.boxUrl}uploaded/`, access_token).then(res => {
       console.log(res);
 
       setXMLData(
@@ -61,7 +61,7 @@ export function ProfilePage() {
 
       <Segment>
         <h3>Sample XML</h3>
-        <p>Getting /imported</p>
+        <p>Getting /uploaded</p>
         <p>{xmlData ? JSON.stringify(xmlData) : 'loading'}</p>
       </Segment>
 

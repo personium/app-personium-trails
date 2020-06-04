@@ -43,7 +43,7 @@
         </propstat>
     </response>
     <response>
-        <href>personium-localbox:/imported</href>
+        <href>personium-localbox:/uploaded</href>
         <propstat>
             <prop>
                 <creationdate>2020-05-27T23:26:53.973+0900</creationdate>
@@ -68,7 +68,7 @@
                 </resourcetype>
                 <acl xml:base="https://app-personium-trails.appdev.personium.io/__role/__/" xmlns:p="urn:x-personium:xmlns"/>
                 <p:service language="JavaScript" subject="engine" xmlns:p="urn:x-personium:xmlns" xmlns:D="DAV:" xmlns:Z="http://www.w3.com/standards/z39.50/">
-                    <p:path name="process_imported_data" src="process_imported_data.js"/>
+                    <p:path name="process_uploaded_data" src="process_uploaded_data.js"/>
                 </p:service>
             </prop>
             <status>HTTP/1.1 200 OK</status>
@@ -117,7 +117,7 @@
         </propstat>
     </response>
     <response>
-        <href>personium-localbox:/Engine/__src/process_imported_data.js</href>
+        <href>personium-localbox:/Engine/__src/process_uploaded_data.js</href>
         <propstat>
             <prop>
                 <creationdate>2020-05-28T12:09:02.271+0900</creationdate>

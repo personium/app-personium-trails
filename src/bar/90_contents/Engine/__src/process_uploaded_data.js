@@ -53,7 +53,7 @@ function(request) {
 
 var _getTimelineObjects = function (targetFile) {
     var box = _p.localbox();
-    var jsonStr = box.getString('imported/'+ targetFile);
+    var jsonStr = box.getString('uploaded/'+ targetFile);
     
     var timelineObjects = JSON.parse(jsonStr).timelineObjects;
     
@@ -215,9 +215,9 @@ var _addExtension = function(query) {
 var _getAllFiles = function() {
     var box = _p.localbox();
     var pathBox = box.getPath(); // "https://dixonsiu.appdev.personium.io/app-personium-trails"
-    var col = box.col("imported");
+    var col = box.col("uploaded");
     //var results = _.map(col.getFileList(), function(item){
-    //    return item.split(pathBox + '/imported/')[1];
+    //    return item.split(pathBox + '/uploaded/')[1];
     //})
     
     var results = {};

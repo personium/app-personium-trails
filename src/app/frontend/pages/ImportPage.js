@@ -35,7 +35,7 @@ export function ImportPage(props) {
       },
     });
     client
-      .getDirectoryContents('/imported', {
+      .getDirectoryContents('/uploaded', {
         deep: false,
       })
       .then(items => items.filter(item => item.type === 'directory'))
@@ -64,12 +64,12 @@ export function ImportPage(props) {
     if (localMode) return;
     console.log('start import', selected);
     setSending(true);
-    fetch(`${handler.boxUrl}Engine/process_imported_data`, {
+    fetch(`${handler.boxUrl}Engine/process_uploaded_data`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${handler.accessToken.access_token}`,
       },
-      body: JSON.stringify({ target: selected.replace('/imported/', '') }),
+      body: JSON.stringify({ target: selected.replace('/uploaded/', '') }),
     })
       .then(res => res.json())
       .then(jsonDat => {
