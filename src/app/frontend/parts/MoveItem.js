@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Item, Checkbox } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
@@ -8,27 +8,7 @@ export function MoveItem(props) {
   const startTime = parseInt(_startTime.match(/\/Date\((\d+)\)\//)[1]);
   const endTime = parseInt(_endTime.match(/\/Date\((\d+)\)\//)[1]);
 
-  const [isPublic, setPublic] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    setTimeout(() => setLoading(false), 1000);
-  }, []);
-
-  const onClick = useCallback(() => {
-    console.log('clicked');
-    if (loading) return;
-    if (isPublic) {
-      // clear ACL
-      console.log('set to private');
-      setPublic(false);
-    } else {
-      // set ACL
-      console.log('set to public');
-      setPublic(true);
-    }
-  }, [isPublic, loading]);
-
+  const { isPublic, isLoading, onClick } = props;
   const strPublic = isPublic ? 'public' : 'private';
 
   return (
@@ -45,7 +25,7 @@ export function MoveItem(props) {
           </div>
           <Checkbox
             toggle
-            disabled={loading}
+            disabled={isLoading}
             readOnly
             onClick={onClick}
             label={strPublic}
@@ -67,4 +47,7 @@ MoveItem.propTypes = {
     eLatitudeE7: PropTypes.number,
     eLongitudeE7: PropTypes.number,
   }),
+  isPublic: PropTypes.bool,
+  isLoading: PropTypes.bool,
+  onClick: PropTypes.func,
 };

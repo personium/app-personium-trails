@@ -4,7 +4,7 @@ import { Segment, Header, Select, Button, Form } from 'semantic-ui-react';
 import webdav from 'webdav';
 import { atomLocalMode } from '../common/state';
 import { useRecoilValue } from 'recoil';
-import { handler } from '../lib/personium_auth_adapter';
+import { authState as handler } from '../lib/personium_auth_adapter';
 
 export function ImportPage(props) {
   const [selected, setSelected] = useState(null);
@@ -14,18 +14,18 @@ export function ImportPage(props) {
 
   useEffect(() => {
     // on mounted
-    if (localMode) {
-      setTimeout(() => {
-        setFiles(
-          [1, 2, 3, 4, 5].map(item => ({
-            key: `${item}.json`,
-            value: `${item}.json`,
-            text: `${item}/${item}.json`,
-          }))
-        );
-      }, 1000);
-      return;
-    }
+    // if (localMode) {
+    //   setTimeout(() => {
+    //     setFiles(
+    //       [1, 2, 3, 4, 5].map(item => ({
+    //         key: `${item}.json`,
+    //         value: `${item}.json`,
+    //         text: `${item}/${item}.json`,
+    //       }))
+    //     );
+    //   }, 1000);
+    //   return;
+    // }
 
     // ToDo: refactoring
     const client = webdav.createClient(handler.boxUrl, {
@@ -60,27 +60,24 @@ export function ImportPage(props) {
     setSelected(data.value);
   });
 
-  const onSubmit = useCallback(
-    e => {
-      if (localMode) return;
-      console.log('start import', selected);
-      setSending(true);
-      fetch(`${handler.boxUrl}Engine/process_imported_data`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${handler.accessToken.access_token}`,
-        },
-        body: JSON.stringify({ target: selected.replace('/imported/', '') }),
-      })
-        .then(res => res.json())
-        .then(jsonDat => {
-          console.log(jsonDat);
-          setSelected(null);
-          setSending(false);
-        });
-    },
-    [selected, setSending, setSelected]
-  );
+  const onSubmit = useCallback(() => {
+    if (localMode) return;
+    console.log('start import', selected);
+    setSending(true);
+    fetch(`${handler.boxUrl}Engine/process_imported_data`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${handler.accessToken.access_token}`,
+      },
+      body: JSON.stringify({ target: selected.replace('/imported/', '') }),
+    })
+      .then(res => res.json())
+      .then(jsonDat => {
+        console.log(jsonDat);
+        setSelected(null);
+        setSending(false);
+      });
+  }, [selected, setSending, setSelected]);
   return (
     <>
       <Segment>

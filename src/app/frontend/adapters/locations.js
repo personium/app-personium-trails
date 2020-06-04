@@ -1,5 +1,5 @@
 import { addDays } from 'date-fns';
-import { handler } from '../lib/personium_auth_adapter';
+import { authState as handler } from '../lib/personium_auth_adapter';
 
 class LocationAdapter {
   async getStaysByDate(date) {

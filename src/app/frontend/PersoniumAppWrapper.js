@@ -3,7 +3,11 @@ import PropTypes from 'prop-types';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { isLogin, isError, tokens } from './common/auth';
 import { atomLocalMode } from './common/state';
-import { handler } from './lib/personium_auth_adapter';
+import {
+  authState,
+  PersoniumLoginHandler,
+  PersoniumLoginROPC,
+} from './lib/personium_auth_adapter';
 import { useHistory } from 'react-router-dom';
 
 export function PersoniumAppWrapper(props) {
@@ -18,10 +22,10 @@ export function PersoniumAppWrapper(props) {
     let autoRefreshID = -1;
     console.log('mounted PersoniumAppWrapper');
 
-    setLocalMode(
-      () =>
-        location.hostname === 'localhost' || location.hostname === '127.0.0.1'
-    );
+    const isLocalMode =
+      location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+
+    setLocalMode(isLocalMode);
 
     // Boot Script
     const LS_LAST_LOGIN_CELL = 'lastLoginCell';
@@ -54,23 +58,29 @@ export function PersoniumAppWrapper(props) {
       targetCell = lastLoginCell ? lastLoginCell : null;
     }
 
-    if (targetCell) {
-      handler.setup(targetCell);
-    } else {
+    if (!targetCell) {
       // targetCell unknown
       setError({ message: 'Launch this app from your Home App again.' });
       return () => {};
     }
 
+    const handler = isLocalMode
+      ? new PersoniumLoginROPC(
+          targetCell,
+          'app-personium-trails',
+          localStorage.getItem('USERNAME_FOR_DEVELOPMENT'),
+          localStorage.getItem('PASSWORD_FOR_DEVELOPMENT')
+        )
+      : new PersoniumLoginHandler(targetCell);
+
     // subscribe authentication state
-    // handler.subscribe();
     handler.loginAsync().then(() => {
       // sined in successfully
       localStorage.setItem(LS_LAST_LOGIN_CELL, targetCell);
       console.log('logged in');
       if (!unmounted) {
         setLogin(true);
-        setToken(handler.accessToken);
+        setToken(authState.accessToken);
       }
 
       // start refreshing access_token (per 3000 sec)

@@ -1,6 +1,45 @@
 import { addDays } from 'date-fns';
-import { handler } from '../lib/personium_auth_adapter';
+import { authState as handler } from '../lib/personium_auth_adapter';
+import { statDirectory } from './webdav';
 import { o } from 'odata';
+import EventEmitter from 'events';
+
+export const getYMDFromDate = date => {
+  const y = date.getUTCFullYear();
+  const m = date.getUTCMonth() + 1;
+  const d = date.getUTCDate();
+  return `${y}/${('0' + m).slice(-2)}${('0' + d).slice(-2)}`;
+};
+export const getYMD = timestampms => {
+  const date = new Date(timestampms);
+  return getYMDFromDate(date);
+};
+
+class LocationStatListener {
+  constructor() {
+    this.emitter = new EventEmitter();
+    this.lastStat = new Map();
+  }
+
+  subscribe(filename, fn, silent = false) {
+    this.emitter.on(filename, fn);
+    if (!silent && this.lastStat.has(filename)) {
+      fn(this.lastStat.get(filename));
+    }
+  }
+
+  unsubscribe(filename, fn) {
+    this.emitter.off(filename, fn);
+  }
+
+  fire(filename, stat) {
+    console.log('emit', filename, stat);
+    this.lastStat.set(filename, stat);
+    this.emitter.emit(filename, stat);
+  }
+}
+
+export const statListener = new LocationStatListener();
 
 class LocationDirectAdapter {
   constructor() {
@@ -26,6 +65,27 @@ class LocationDirectAdapter {
     this.current_box_url = handler.boxUrl;
     this.current_access_token = handler.accessToken.access_token;
   }
+
+  async getTimelineByDate(date) {
+    // fetch stat and fire event
+    const from = getYMDFromDate(date);
+    const to = getYMDFromDate(addDays(date, 1));
+    const days = Array.from(new Set([from, to]));
+    return Promise.all(
+      days.map(ymd =>
+        statDirectory(
+          `${this.current_box_url}exported/${ymd}`,
+          this.current_access_token
+        )
+      )
+    )
+      .then(results => new Map([].concat(...results.map(res => [...res]))))
+      .then(results => {
+        [...results].forEach(([key, val]) => statListener.fire(key, val));
+        return results;
+      });
+  }
+
   async getEntityByDate(entityName, date) {
     this.refreshOHandler();
     const from = date.getTime();
@@ -34,7 +94,7 @@ class LocationDirectAdapter {
     return await this.oHandler
       .get(entityName)
       .query({
-        $filter: `startTime ge ${from} and endTime lt ${to}`,
+        $filter: `startTime ge ${from} and startTime lt ${to}`,
         $format: 'json',
       })
       .then(res => {

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Item, Checkbox } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
@@ -8,33 +8,15 @@ export function StayItem(props) {
   const startTime = parseInt(_startTime.match(/\/Date\((\d+)\)\//)[1]);
   const endTime = parseInt(_endTime.match(/\/Date\((\d+)\)\//)[1]);
 
-  const [isPublic, setPublic] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    setTimeout(() => setLoading(false), 1000);
-  }, []);
-
-  const onClick = useCallback(() => {
-    console.log('clicked');
-    if (loading) return;
-    if (isPublic) {
-      // clear ACL
-      console.log('set to private');
-      setPublic(false);
-    } else {
-      // set ACL
-      console.log('set to public');
-      setPublic(true);
-    }
-  }, [isPublic, loading]);
-
+  const { isPublic, isLoading, onClick } = props;
   const strPublic = isPublic ? 'public' : 'private';
 
   return (
-    <Item as={Link} to={`/detail/${__id}`}>
+    <Item>
       <Item.Content verticalAlign="middle">
-        <Item.Header>{name}</Item.Header>
+        <Item.Header as={Link} to={`/detail/${__id}`}>
+          {name}
+        </Item.Header>
         <Item.Meta>#{__id}</Item.Meta>
         <Item.Extra>
           <div>
@@ -43,7 +25,7 @@ export function StayItem(props) {
           </div>
           <Checkbox
             toggle
-            disabled={loading}
+            disabled={isLoading}
             readOnly
             onClick={onClick}
             label={strPublic}
@@ -65,4 +47,7 @@ StayItem.propTypes = {
     name: PropTypes.string,
     placeId: PropTypes.string,
   }),
+  isPublic: PropTypes.bool,
+  isLoading: PropTypes.bool,
+  onClick: PropTypes.func,
 };

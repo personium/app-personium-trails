@@ -2,9 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { isLogin, tokens } from '../common/auth';
 import { atom, useRecoilValue, useRecoilState } from 'recoil';
 import { Segment, Table } from 'semantic-ui-react';
-import { handler } from '../lib/personium_auth_adapter';
+import { authState as handler } from '../lib/personium_auth_adapter';
 import { TokenView } from '../parts/TokenView';
 import { TokenIntrospect } from '../parts/TokenIntrospect';
+import { statDirectory } from '../adapters/webdav';
+
+import xpath from 'xpath';
+import { DOMParser } from 'xmldom';
 
 const _introspection = atom({
   key: 'profileTokenIntrospection',
@@ -16,6 +20,7 @@ export function ProfilePage() {
   const token = useRecoilValue(tokens);
   const [introspection, setIntrospection] = useRecoilState(_introspection);
   const [userData, setUserData] = useState(null);
+  const [xmlData, setXMLData] = useState(null);
 
   useEffect(() => {
     fetch(`${handler.boxUrl}secret.txt`, {
@@ -28,6 +33,23 @@ export function ProfilePage() {
     return () => setUserData(null);
   }, [token]);
 
+  useEffect(() => {
+    const { access_token } = handler.accessToken;
+    statDirectory(`${handler.boxUrl}imported/`, access_token).then(res => {
+      console.log(res);
+
+      setXMLData(
+        Array.from(res.entries()).map(([key, val]) => ({
+          file: key,
+          acl: Array.from(val.entries()).map(([key, val]) => ({
+            principal: key,
+            privilege: Array.from(val.keys()),
+          })),
+        }))
+      );
+    });
+  }, handler.accessToken);
+
   return (
     <>
       <h1>Profile</h1>
@@ -35,6 +57,12 @@ export function ProfilePage() {
         <h3>Sample GET</h3>
         <p>Getting secret.txt</p>
         <p>{userData ? userData : 'loading'}</p>
+      </Segment>
+
+      <Segment>
+        <h3>Sample XML</h3>
+        <p>Getting /imported</p>
+        <p>{xmlData ? JSON.stringify(xmlData) : 'loading'}</p>
       </Segment>
 
       <Segment>
