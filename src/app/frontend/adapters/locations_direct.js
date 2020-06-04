@@ -56,7 +56,7 @@ class LocationDirectAdapter {
     )
       return;
 
-    this.oHandler = o(`${handler.boxUrl}current/`, {
+    this.oHandler = o(`${handler.boxUrl}index/`, {
       headers: {
         Authorization: `Bearer ${handler.accessToken.access_token}`,
         'Content-Type': 'application/json',
@@ -74,7 +74,7 @@ class LocationDirectAdapter {
     return Promise.all(
       days.map(ymd =>
         statDirectory(
-          `${this.current_box_url}exported/${ymd}`,
+          `${this.current_box_url}locations/${ymd}`,
           this.current_access_token
         )
       )

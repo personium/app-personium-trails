@@ -29,7 +29,7 @@ export const locationURLFromId = selectorFamily({
     const odata = get(locationODataFromId(locationId));
     const timems = parseInt(odata.startTime.match(/\/Date\((\d+)\)\//)[1]);
     const filename = `${'placeId' in odata ? 's' : 'm'}_${timems}.json`;
-    const folder = `${authState.boxUrl}exported/${getYMD(timems)}/`;
+    const folder = `${authState.boxUrl}locations/${getYMD(timems)}/`;
     const filepath = `${folder}${filename}`;
     return filepath;
   },

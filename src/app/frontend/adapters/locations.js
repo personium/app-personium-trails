@@ -7,7 +7,7 @@ class LocationAdapter {
     const to = addDays(date, 1).getTime() - 1;
     return await (
       await fetch(
-        `${handler.boxUrl}current/Stay?$filter=startTime ge ${from} and endTime lt ${to}`
+        `${handler.boxUrl}index/Stay?$filter=startTime ge ${from} and endTime lt ${to}`
       )
     ).json();
   }
@@ -17,7 +17,7 @@ class LocationAdapter {
     const to = addDays(date, 1).getTime() - 1;
     return await (
       await fetch(
-        `${handler.boxUrl}current/Visit?$filter=startTime ge ${from} and endTime lt ${to}`
+        `${handler.boxUrl}index/Visit?$filter=startTime ge ${from} and endTime lt ${to}`
       )
     ).json();
   }

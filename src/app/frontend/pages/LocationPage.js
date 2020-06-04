@@ -48,7 +48,7 @@ const locationResults = selector({
           // resolve filename
           const timems = parseInt(item.startTime.match(/\/Date\((\d+)\)\//)[1]);
           const filename = `${'placeId' in item ? 's' : 'm'}_${timems}.json`;
-          const folder = `${authState.boxUrl}exported/${getYMD(timems)}/`;
+          const folder = `${authState.boxUrl}locations/${getYMD(timems)}/`;
           const filepath = `${folder}${filename}`;
           console.log({ item, stat: stat.get(filepath) });
           return {
@@ -90,7 +90,7 @@ function LocationFilter() {
 function LocationItem({ item }) {
   const timems = parseInt(item.startTime.match(/\/Date\((\d+)\)\//)[1]);
   const filename = `${'placeId' in item ? 's' : 'm'}_${timems}.json`;
-  const folder = `${authState.boxUrl}exported/${getYMD(timems)}/`;
+  const folder = `${authState.boxUrl}locations/${getYMD(timems)}/`;
   const filepath = `${folder}${filename}`;
 
   const {
