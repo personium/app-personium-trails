@@ -1,5 +1,5 @@
-import React, { Suspense, useState, useCallback } from 'react';
-import { Route, Link } from 'react-router-dom';
+import React, { Suspense, useState, useCallback, useMemo } from 'react';
+import { Route, Link, Redirect, Switch } from 'react-router-dom';
 
 import { TopPage } from './pages/TopPage';
 import { LocationPage } from './pages/LocationPage';
@@ -7,14 +7,10 @@ import { DetailPage } from './pages/DetailPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { ImportPage } from './pages/ImportPage';
 
-import {
-  Menu,
-  Container,
-  Responsive,
-  Sidebar,
-  Segment,
-  Icon,
-} from 'semantic-ui-react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
+
+import { Menu, Container, Sidebar, Segment } from 'semantic-ui-react';
 
 export default function App() {
   const [sidebarOpened, setSidebarOpended] = useState(false);
@@ -26,6 +22,18 @@ export default function App() {
   const handleToggle = useCallback(() => {
     setSidebarOpended(c => !c);
   });
+
+  const date = new Date();
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  const todayLocation = useMemo(() => {
+    const loc = `/locations/${year}-${('0' + month).slice(-2)}-${(
+      '0' + day
+    ).slice(-2)}`;
+    console.log('todayLocation', loc);
+    return loc;
+  }, [month, year, day]);
 
   return (
     <>
@@ -41,7 +49,7 @@ export default function App() {
           <Menu.Item as={Link} to="/" name="Top" onClick={handleSidebarHide} />
           <Menu.Item
             as={Link}
-            to="/locations/2020-04-01"
+            to="/locations"
             name="Locations"
             onClick={handleSidebarHide}
           />
@@ -62,30 +70,33 @@ export default function App() {
             <Menu inverted pointing secondary size="large">
               <Container>
                 <Menu.Item onClick={handleToggle}>
-                  <Icon name="sidebar" />
+                  <FontAwesomeIcon icon={faBars} />
                 </Menu.Item>
               </Container>
             </Menu>
           </Segment>
           <Container>
-            <Route path="/" exact>
-              <TopPage />
-            </Route>
-            <Route path="/locations/:year(\d+)-:month(\d+)-:day(\d+)">
-              <Suspense fallback={<h1>loading</h1>}>
-                <LocationPage />
-              </Suspense>
-            </Route>
-            <Route path="/detail/:__id" component={DetailPage} />
-            <Route path="/about" exact>
-              <h1>About Personium Trails</h1>
-            </Route>
-            <Route path="/profile" exact>
-              <ProfilePage />
-            </Route>
-            <Route path="/import" exact>
-              <ImportPage />
-            </Route>
+            <Switch>
+              <Redirect exact from="/locations" to={todayLocation} />
+              <Route path="/" exact>
+                <TopPage />
+              </Route>
+              <Route path="/locations/:year(\d+)-:month(\d+)-:day(\d+)">
+                <Suspense fallback={<h1>loading</h1>}>
+                  <LocationPage />
+                </Suspense>
+              </Route>
+              <Route path="/detail/:__id" component={DetailPage} />
+              <Route path="/about" exact>
+                <h1>About Personium Trails</h1>
+              </Route>
+              <Route path="/profile" exact>
+                <ProfilePage />
+              </Route>
+              <Route path="/import" exact>
+                <ImportPage />
+              </Route>
+            </Switch>
           </Container>
         </Sidebar.Pusher>
       </Sidebar.Pushable>
