@@ -131,7 +131,7 @@ var _createFolder = function (col, name) {
 };
 
 var _getTable = function (tableName) {
-    return _p.localbox().odata('current').entitySet(tableName);
+    return _p.localbox().odata('index').entitySet(tableName);
 };
 
 var _toStayJSON = function (item) {

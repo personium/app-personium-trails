@@ -56,7 +56,7 @@ class LocationDirectAdapter {
     )
       return;
 
-    this.oHandler = o(`${handler.boxUrl}current/`, {
+    this.oHandler = o(`${handler.boxUrl}index/`, {
       headers: {
         Authorization: `Bearer ${handler.accessToken.access_token}`,
         'Content-Type': 'application/json',

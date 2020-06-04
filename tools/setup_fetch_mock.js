@@ -66,7 +66,7 @@
 
 // fetchMock.get(`${DEV_CELL}${BOX_NAME}/secret.txt`, 'secret');
 
-// fetchMock.get(`begin:${DEV_CELL}${BOX_NAME}/current/Stay?`, (url, opts) => {
+// fetchMock.get(`begin:${DEV_CELL}${BOX_NAME}/index/Stay?`, (url, opts) => {
 //   const decoded = decodeURI(url);
 //   const nums = decoded.match(/\d+/g).map(item => parseInt(item));
 //   const from = Math.min(...nums);
@@ -80,7 +80,7 @@
 //   });
 // });
 
-// fetchMock.get(`begin:${DEV_CELL}${BOX_NAME}/current/Visit?`, (url, opts) => {
+// fetchMock.get(`begin:${DEV_CELL}${BOX_NAME}/index/Visit?`, (url, opts) => {
 //   const decoded = decodeURI(url);
 //   const nums = decoded.match(/\d+/g).map(item => parseInt(item));
 //   const from = Math.min(...nums);
