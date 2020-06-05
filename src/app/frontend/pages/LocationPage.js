@@ -1,15 +1,22 @@
 import React, { useEffect, Suspense, useCallback } from 'react';
-import PropTypes from 'prop-types';
-import { atom, selector, useRecoilValue, useSetRecoilState } from 'recoil';
+import {
+  atom,
+  selector,
+  useRecoilValue,
+  useSetRecoilState,
+  useRecoilValueLoadable,
+} from 'recoil';
 
 import { useParams } from 'react-router-dom';
-import { Item, Container, Header } from 'semantic-ui-react';
+import { Item } from 'semantic-ui-react';
 
 import { authState } from '../lib/personium_auth_adapter';
 import { adapter, getYMD } from '../adapters/locations_direct';
 
 import { StayItem } from '../parts/StayItem';
 import { MoveItem } from '../parts/MoveItem';
+
+import { LocationFilter } from '../parts/LocationFilter';
 
 import {
   locationACLStatusState,
@@ -19,7 +26,7 @@ import {
 const locationQuery = atom({
   key: 'searchLocationQuery',
   default: {
-    year: 2020,
+    year: null,
     month: null,
     day: null,
   },
@@ -62,30 +69,6 @@ const locationResults = selector({
       .then(results => results.map(item => item.dat));
   },
 });
-
-function LocationFilter() {
-  const setQuery = useSetRecoilState(locationQuery);
-  const { year, month, day } = useParams();
-
-  useEffect(() => {
-    setQuery({
-      year: Number(year),
-      month: Number(month),
-      day: Number(day),
-    });
-  }, [year, month, day]);
-
-  return (
-    <Header as="h3">
-      Locations on{' '}
-      {new Date(
-        Number(year),
-        Number(month - 1),
-        Number(day)
-      ).toLocaleDateString()}
-    </Header>
-  );
-}
 
 function LocationItem({ item }) {
   const timems = parseInt(item.startTime.match(/\/Date\((\d+)\)\//)[1]);
@@ -132,28 +115,34 @@ function LocationItem({ item }) {
 }
 
 export function LocationPage() {
-  const locations = useRecoilValue(locationResults);
+  const locationsLoadable = useRecoilValueLoadable(locationResults);
+
+  const setQuery = useSetRecoilState(locationQuery);
+  const { year, month, day } = useParams();
+
+  useEffect(() => {
+    // every time mounted, this make new object
+    setQuery({
+      year: Number(year),
+      month: Number(month),
+      day: Number(day),
+    });
+  }, [year, month, day]);
 
   return (
-    <Container>
-      <LocationFilter />
-      <Suspense fallback={<h1>loading</h1>}>
-        <Item.Group>
-          {locations.map(item => (
-            <LocationItem item={item} key={`location_item_${item.__id}`} />
-          ))}
-        </Item.Group>
-      </Suspense>
-    </Container>
+    <>
+      <LocationFilter year={year} month={month} day={day} />
+      {locationsLoadable.state === 'loading' ? (
+        <h1>Loading...</h1>
+      ) : (
+        <Suspense fallback={<h1>loading</h1>}>
+          <Item.Group>
+            {locationsLoadable.contents.map(item => (
+              <LocationItem item={item} key={`location_item_${item.__id}`} />
+            ))}
+          </Item.Group>
+        </Suspense>
+      )}
+    </>
   );
 }
-
-LocationPage.propTypes = {
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      year: PropTypes.string,
-      month: PropTypes.string,
-      day: PropTypes.string,
-    }),
-  }),
-};

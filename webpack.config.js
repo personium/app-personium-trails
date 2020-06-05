@@ -46,6 +46,5 @@ module.exports = {
     historyApiFallback: {
       rewrites: [{ from: '/', to: '/dev_index.html' }],
     },
-    openPage: '#cell=https://dev-user.personium.localhost/',
   },
 };

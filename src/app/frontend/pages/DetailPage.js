@@ -67,8 +67,9 @@ function LocationDataURLViewChild({ __id, locationUrl }) {
 
   return (
     <Form.Field disabled={isLoading}>
-      <label>Your public url</label>
+      <label>This location is set as `{aclStatus}`</label>
       <Input
+        fluid
         disabled={aclStatus === 'private'}
         ref={refInput}
         value={locationUrl}
