@@ -11,6 +11,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 
 import { Menu, Container, Sidebar, Segment } from 'semantic-ui-react';
+import 'semantic-ui-css/semantic.min.css';
 
 export default function App() {
   const [sidebarOpened, setSidebarOpended] = useState(false);

@@ -44,6 +44,7 @@ module.exports = {
     // eslint-disable-next-line
     path: path.resolve(__dirname, "build/public"),
     filename: 'bundle.js',
+    publicPath: '/__/public/',
   },
   devServer: {
     contentBase: `${__dirname}/tools/`,
