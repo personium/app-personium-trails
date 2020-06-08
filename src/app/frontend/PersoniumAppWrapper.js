@@ -9,6 +9,7 @@ import {
   PersoniumLoginROPC,
 } from './lib/personium_auth_adapter';
 import { useHistory } from 'react-router-dom';
+import { PersoniumLoading } from './parts/PersoniumLoading';
 
 export function PersoniumAppWrapper(props) {
   const [login, setLogin] = useRecoilState(isLogin);
@@ -74,18 +75,28 @@ export function PersoniumAppWrapper(props) {
       : new PersoniumLoginHandler(targetCell);
 
     // subscribe authentication state
-    handler.loginAsync().then(() => {
-      // sined in successfully
-      localStorage.setItem(LS_LAST_LOGIN_CELL, targetCell);
-      console.log('logged in');
-      if (!unmounted) {
-        setLogin(true);
-        setToken(authState.accessToken);
-      }
-
-      // start refreshing access_token (per 3000 sec)
-      autoRefreshID = setInterval(() => handler.refreshAsync(), 3000 * 1000);
-    });
+    handler
+      .loginAsync()
+      .then(() => {
+        // sined in successfully
+        localStorage.setItem(LS_LAST_LOGIN_CELL, targetCell);
+        console.log('logged in');
+        if (!unmounted) {
+          setLogin(true);
+          setToken(authState.accessToken);
+        }
+        // start refreshing access_token (per 3000 sec)
+        autoRefreshID = setInterval(() => handler.refreshAsync(), 3000 * 1000);
+      })
+      .catch(res => {
+        // ToDo: change handling depending on situation.
+        console.log(res);
+        setError({
+          message: 'Authentication failed',
+          body: 'Please login from your Home App',
+          bodyUrl: targetCell,
+        });
+      });
 
     return () => {
       // unsubscribe
@@ -95,19 +106,29 @@ export function PersoniumAppWrapper(props) {
       }
     };
   }, []);
+
+  if (login) return props.children;
   return (
-    <>
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        height: '100vh',
+        flexDirection: 'column',
+      }}
+    >
+      <div style={{ flexGrow: 1 }} />
+      <PersoniumLoading />
       {error ? (
         <>
-          <h1>Oops, you cannot sign in</h1>
-          <p>{error.message}</p>
+          <h1>{error.message || 'Oops, you cannot sign in'}</h1>
+          <p>
+            <a href={error.bodyUrl}>{error.body || 'click'}</a>
+          </p>
         </>
-      ) : login ? (
-        props.children
-      ) : (
-        <h1>start login...</h1>
-      )}
-    </>
+      ) : null}
+      <div style={{ flexGrow: 1 }} />
+    </div>
   );
 }
 

@@ -175,6 +175,10 @@ const webpack = require('webpack-stream');
 gulp.task('webpack', () => {
   return gulp
     .src('src/app/frontend/index.js')
-    .pipe(webpack(require('./webpack.config')))
+    .pipe(
+      webpack(
+        Object.assign(require('./webpack.config'), { mode: 'production' })
+      )
+    )
     .pipe(gulp.dest('build/public'));
 });

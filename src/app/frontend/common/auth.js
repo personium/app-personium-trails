@@ -7,7 +7,7 @@ export const isLogin = atom({
 
 export const isError = atom({
   key: 'personiumIsError',
-  default: false,
+  default: null,
 });
 
 export const tokens = atom({
