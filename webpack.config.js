@@ -1,4 +1,7 @@
+const path = require('path');
+
 module.exports = {
+  mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
   entry:
     process.env.NODE_ENV === 'development'
       ? [
@@ -39,6 +42,7 @@ module.exports = {
   },
   output: {
     // eslint-disable-next-line
+    path: path.resolve(__dirname, "build/public"),
     filename: 'bundle.js',
   },
   devServer: {
