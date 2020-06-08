@@ -57,6 +57,7 @@
     "style-loader": "^1.2.1",
     "tunnel": "0.0.6",
     "url-loader": "^4.1.0",
+    "vivus": "^0.4.5",
     "webdav": "git+https://github.com/yoh1496/webdav-client.git#feature/updateProperty",
     "webpack": "^4.43.0",
     "webpack-cli": "^3.3.11",
