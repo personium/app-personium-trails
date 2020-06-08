@@ -18,6 +18,7 @@ module.exports = {
             options: { url: false },
           },
         ],
+        sideEffects: true,
       },
       {
         test: /\.(js|jsx)$/,
