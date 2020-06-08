@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, Suspense, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { isLogin, isError, tokens } from './common/auth';
@@ -9,13 +9,14 @@ import {
   PersoniumLoginROPC,
 } from './lib/personium_auth_adapter';
 import { useHistory } from 'react-router-dom';
-import { PersoniumLoading } from './parts/PersoniumLoading';
+import { LoadingPage } from './pages/LoadingPage';
 
 export function PersoniumAppWrapper(props) {
   const [login, setLogin] = useRecoilState(isLogin);
   const [error, setError] = useRecoilState(isError);
   const setLocalMode = useSetRecoilState(atomLocalMode);
   const setToken = useSetRecoilState(tokens);
+  const [appLoaded, setAppLoaded] = useState(false);
   const history = useHistory();
 
   useEffect(() => {
@@ -98,6 +99,10 @@ export function PersoniumAppWrapper(props) {
         });
       });
 
+    props.appLoader().then(() => {
+      if (!unmounted) setAppLoaded(true);
+    });
+
     return () => {
       // unsubscribe
       unmounted = true;
@@ -105,33 +110,28 @@ export function PersoniumAppWrapper(props) {
         clearInterval(autoRefreshID);
       }
     };
-  }, []);
+  }, [props.App]);
 
-  if (login) return props.children;
+  console.log(JSON.stringify(props.App));
+
+  if (login && appLoaded) {
+    return (
+      <Suspense fallback={<h1>loading</h1>}>
+        <props.App />
+      </Suspense>
+    );
+  }
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        height: '100vh',
-        flexDirection: 'column',
-      }}
-    >
-      <div style={{ flexGrow: 1 }} />
-      <PersoniumLoading />
-      {error ? (
-        <>
-          <h1>{error.message || 'Oops, you cannot sign in'}</h1>
-          <p>
-            <a href={error.bodyUrl}>{error.body || 'click'}</a>
-          </p>
-        </>
-      ) : null}
-      <div style={{ flexGrow: 1 }} />
-    </div>
+    <LoadingPage
+      message={error ? error.message : null}
+      body={error ? error.body : null}
+      bodyUrl={error ? error.bodyUrl : null}
+    />
   );
 }
 
 PersoniumAppWrapper.propTypes = {
   children: PropTypes.element.isRequired,
+  App: PropTypes.elementType.isRequired,
+  appLoader: PropTypes.func,
 };
