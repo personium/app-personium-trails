@@ -9,7 +9,7 @@ export function PersoniumLoading() {
       setAnimationEnd(true);
     });
     return () => {};
-  }, [refSVG.current, setAnimationEnd]);
+  }, [setAnimationEnd]);
   return (
     <svg
       style={{ display: 'block', width: '100%', padding: 10 }}

@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Item, Checkbox } from 'semantic-ui-react';
+import { Item, Checkbox, Icon } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 
 export function MoveItem(props) {
@@ -15,6 +15,7 @@ export function MoveItem(props) {
     <Item>
       <Item.Content verticalAlign="middle">
         <Item.Header as={Link} to={`/detail/${__id}`}>
+          <Icon name="road" />
           MOVE
         </Item.Header>
         <Item.Meta>#{__id}</Item.Meta>

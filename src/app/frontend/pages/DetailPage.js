@@ -1,4 +1,10 @@
-import React, { useEffect, useRef, useCallback } from 'react';
+import React, {
+  useEffect,
+  useRef,
+  useCallback,
+  useState,
+  Suspense,
+} from 'react';
 import PropTypes from 'prop-types';
 import {
   atom,
@@ -18,6 +24,7 @@ import {
 } from 'semantic-ui-react';
 
 import { authState } from '../lib/personium_auth_adapter';
+
 import {
   locationACLStatusState,
   locationURLFromId,
@@ -27,16 +34,6 @@ import {
 
 const locationId = atom({
   key: 'userLocationId',
-  default: null,
-});
-
-const detailText = atom({
-  key: 'detailText',
-  default: '',
-});
-
-const _locationInfo = atom({
-  key: 'locationInfo',
   default: null,
 });
 
@@ -76,6 +73,11 @@ function LocationDataURLViewChild({ __id, locationUrl }) {
   );
 }
 
+LocationDataURLViewChild.propTypes = {
+  __id: PropTypes.string,
+  locationUrl: PropTypes.string,
+};
+
 function LocationDataURLView({ __id }) {
   const locationUrlLoadable = useRecoilValueLoadable(locationURLFromId(__id));
 
@@ -99,6 +101,76 @@ function LocationDataURLView({ __id }) {
     </Segment>
   );
 }
+
+LocationDataURLView.propTypes = {
+  __id: PropTypes.string,
+};
+
+function LocationRawDataView({ __id }) {
+  return (
+    <Segment>
+      <Header as="h4">Raw data</Header>
+      <Suspense fallback={<div>Loading...</div>}>
+        <LocationRawDataViewChild __id={__id} />
+      </Suspense>
+    </Segment>
+  );
+}
+
+LocationRawDataView.propTypes = {
+  __id: PropTypes.string,
+};
+
+function LocationRawDataViewChild({ __id }) {
+  const locationUrl = useRecoilValue(locationURLFromId(__id));
+  const [locationInfo, setLocationInfo] = useState({});
+
+  useEffect(() => {
+    let unmounted = false;
+    fetch(locationUrl, {
+      headers: {
+        Authorization: `Bearer ${authState.accessToken.access_token}`,
+      },
+    })
+      .then(res => res.json())
+      .then(jsonDat => {
+        if (!unmounted) setLocationInfo(jsonDat);
+      });
+
+    return function cleanup() {
+      unmounted = true;
+    };
+  }, [locationUrl]);
+
+  return (
+    <Table>
+      <Table.Header>
+        <Table.Row>
+          <Table.HeaderCell>Name</Table.HeaderCell>
+          <Table.HeaderCell>Value</Table.HeaderCell>
+        </Table.Row>
+      </Table.Header>
+
+      <Table.Body>
+        {Object.entries(locationInfo).map(([key, val]) => {
+          const _val = typeof val === 'object' ? JSON.stringify(val) : val;
+          return (
+            <Table.Row key={key}>
+              <Table.Cell>{key}</Table.Cell>
+              <Table.Cell style={{ overflowWrap: 'anywhere' }}>
+                {_val}
+              </Table.Cell>
+            </Table.Row>
+          );
+        })}
+      </Table.Body>
+    </Table>
+  );
+}
+
+LocationRawDataViewChild.propTypes = {
+  __id: PropTypes.string,
+};
 
 function LocationODataView({ __id }) {
   const locationInfoLoadable = useRecoilValueLoadable(
@@ -143,11 +215,13 @@ function LocationODataView({ __id }) {
   );
 }
 
-export function DetailPage() {
-  const { __id, type } = useParams();
-  const [Id, setId] = useRecoilState(locationId);
+LocationODataView.propTypes = {
+  __id: PropTypes.string,
+};
 
-  const [text, setText] = useRecoilState(detailText);
+export function DetailPage() {
+  const { __id } = useParams();
+  const [Id, setId] = useRecoilState(locationId);
   console.log(__id);
 
   useEffect(() => {
@@ -160,6 +234,7 @@ export function DetailPage() {
       <Header as="h3">Detail of #{Id}</Header>
       <LocationDataURLView __id={__id} />
       <LocationODataView __id={__id} />
+      <LocationRawDataView __id={__id} />
     </Container>
   );
 }
