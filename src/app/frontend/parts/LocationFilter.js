@@ -33,18 +33,18 @@ export function LocationFilter({ year, month, day }) {
       );
       setModalOpen(false);
     },
-    [setModalOpen]
+    [history, setModalOpen]
   );
 
   const handleNextClick = useCallback(() => {
     const date = new Date(year, month - 1, day);
     history.push(getDateString(addDays(date, 1)));
-  }, [year, month, day]);
+  }, [year, month, day, history]);
 
   const handlePrevClick = useCallback(() => {
     const date = new Date(year, month - 1, day);
     history.push(getDateString(addDays(date, -1)));
-  }, [year, month, day]);
+  }, [year, month, day, history]);
 
   return (
     <>
