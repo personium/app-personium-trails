@@ -7,9 +7,6 @@ import {
   useRecoilValue,
 } from 'recoil';
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCopy } from '@fortawesome/free-solid-svg-icons';
-
 import { useParams } from 'react-router-dom';
 import {
   Container,
@@ -43,12 +40,6 @@ const _locationInfo = atom({
   default: null,
 });
 
-function FaCopyIcon() {
-  return (
-    <FontAwesomeIcon icon={faCopy} className="icon" style={{ padding: 10 }} />
-  );
-}
-
 function LocationDataURLViewChild({ __id, locationUrl }) {
   const { updateLocationACL } = useLocationACLSubscribe(__id, locationUrl);
   const aclStatus = useRecoilValue(locationACLStatusState(__id));
@@ -75,7 +66,7 @@ function LocationDataURLViewChild({ __id, locationUrl }) {
         value={locationUrl}
         action={{
           color: 'teal',
-          icon: FaCopyIcon,
+          icon: 'copy',
           labelPosition: 'right',
           content: 'Copy',
           onClick: onClick,

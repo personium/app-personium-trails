@@ -18,7 +18,8 @@ module.exports = {
     "sourceType": "module"
   },
   "plugins": [
-    "react"
+    "react",
+    "react-hooks",
   ], 
   "rules": {
     "linebreak-style": [
@@ -30,6 +31,13 @@ module.exports = {
       {
         "singleQuote": true,
         "trailingComma": "es5",
+      }
+    ],
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": [
+      "warn",
+      {
+        "additionalHooks": "useRecoilCallback"
       }
     ]
   }

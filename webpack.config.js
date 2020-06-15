@@ -18,10 +18,19 @@ module.exports = {
           'style-loader',
           {
             loader: 'css-loader',
-            options: { url: false },
+            options: { url: true },
           },
         ],
         sideEffects: true,
+      },
+      {
+        test: /\.(woff|woff2|eot|ttf|svg|png)$/,
+        use: {
+          loader: 'file-loader',
+          options: {
+            publicPath: '/__/public',
+          },
+        },
       },
       {
         test: /\.(js|jsx)$/,
