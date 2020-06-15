@@ -1,38 +1,13 @@
 import React, { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faCalendar,
-  faChevronLeft,
-  faChevronRight,
-} from '@fortawesome/free-solid-svg-icons';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 
 import { addDays } from 'date-fns';
 
-import {
-  Button,
-  Modal,
-  Card,
-  Container,
-  Grid,
-  Divider,
-} from 'semantic-ui-react';
+import { Button, Modal, Card, Icon, Grid, Divider } from 'semantic-ui-react';
 import { useHistory } from 'react-router-dom';
-
-const FaChevronRight = () => (
-  <i className="icon">
-    <FontAwesomeIcon icon={faChevronRight} className="icon" />
-  </i>
-);
-
-const FaChevronLeft = () => (
-  <i className="icon">
-    <FontAwesomeIcon icon={faChevronLeft} className="icon" />
-  </i>
-);
 
 const getDateString = date => {
   const year = date.getFullYear();
@@ -85,16 +60,14 @@ export function LocationFilter({ year, month, day }) {
         <Grid.Column width={3}>
           <Button
             color="teal"
-            icon={FaChevronLeft}
+            icon="chevron left"
             fluid
             onClick={handlePrevClick}
           />
         </Grid.Column>
         <Grid.Column width={10}>
           <Button basic color="teal" onClick={handleOpen} fluid>
-            <i className="icon">
-              <FontAwesomeIcon icon={faCalendar} className="icon" />
-            </i>
+            <Icon name="calendar" />
             {new Date(
               Number(year),
               Number(month - 1),
@@ -105,7 +78,7 @@ export function LocationFilter({ year, month, day }) {
         <Grid.Column width={3}>
           <Button
             color="teal"
-            icon={FaChevronRight}
+            icon="chevron right"
             fluid
             onClick={handleNextClick}
           />

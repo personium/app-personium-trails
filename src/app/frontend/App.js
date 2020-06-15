@@ -7,10 +7,7 @@ import { DetailPage } from './pages/DetailPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { ImportPage } from './pages/ImportPage';
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars } from '@fortawesome/free-solid-svg-icons';
-
-import { Menu, Container, Sidebar, Segment } from 'semantic-ui-react';
+import { Menu, Container, Sidebar, Segment, Icon } from 'semantic-ui-react';
 
 export default function App() {
   const [sidebarOpened, setSidebarOpended] = useState(false);
@@ -70,7 +67,7 @@ export default function App() {
             <Menu inverted pointing secondary size="large">
               <Container>
                 <Menu.Item onClick={handleToggle}>
-                  <FontAwesomeIcon icon={faBars} />
+                  <Icon name="sidebar" />
                 </Menu.Item>
               </Container>
             </Menu>
