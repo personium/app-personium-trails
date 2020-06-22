@@ -104,7 +104,7 @@ class PersoniumLoginHandler {
     this._targetCell = targetCell;
   }
 
-  async loginAsync() {
+  async loginAsync(appCell = '/', authInfo = null) {
     if (this._loginAsync !== null) {
       console.log('`loginAsync` is already started');
       return this._loginAsync;
@@ -112,13 +112,47 @@ class PersoniumLoginHandler {
 
     console.log('`loginAsync` is started newly');
     return (this._loginAsync = new Promise((resolve, reject) => {
-      fetch(`/__/auth/start_oauth2?cellUrl=${this._targetCell}`, {
+      let authUrl = `${appCell}__/auth/start_oauth2?cellUrl=${this._targetCell}`;
+      let authMethod = 'POST';
+      if (authInfo.code !== undefined && authInfo.state !== undefined) {
+        // receive_redirect
+        authUrl = `${appCell}__/auth/receive_redirect?cellUrl=${this._targetCell}&code=${authInfo.code}&state=${authInfo.state}`;
+        authMethod = 'GET';
+      }
+      fetch(authUrl, {
         credentials: 'include',
-        method: 'POST',
+        method: authMethod,
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
       })
+        .then(res => {
+          if (!res.ok) {
+            return Promise.reject({
+              status: res.status,
+              statusText: res.statusText,
+            });
+          }
+          if (res.headers.get('Content-Type') !== 'application/json') {
+            console.log(res.headers.get('Content-Type'));
+            // start oauth2 with new FORM
+            const oauthFormURL = new URL(res.url);
+            const redirectURI = oauthFormURL.searchParams.get('redirect_uri');
+            const redirectURIobject = new URL(decodeURI(redirectURI));
+            redirectURIobject.pathname = '/__/front/app';
+            oauthFormURL.searchParams.set(
+              'redirect_uri',
+              encodeURI(redirectURIobject.toString())
+            );
+            console.log('oauthFormURL', oauthFormURL.toString());
+            location.href = oauthFormURL.toString();
+            // if (res.status === 303) {
+            //   res.headers.get('Location');
+            // }
+            throw new Error('Not authenticated yet.');
+          }
+          return res;
+        })
         .then(res => res.json())
         .then(jsonDat => {
           this._loginAsync = null;
