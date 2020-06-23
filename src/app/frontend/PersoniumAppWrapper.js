@@ -1,15 +1,15 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useRecoilState, useSetRecoilState, useRecoilValue } from 'recoil';
-import { isLogin, isError, tokens, $authInfo } from './common/auth';
+import { isLogin, tokens, $authInfo, $barInstalled } from './common/auth';
 import { $localMode } from './common/state';
 import {
-  authState,
   PersoniumLoginHandler,
   PersoniumLoginROPC,
 } from './lib/personium_auth_adapter';
 import { useHistory } from 'react-router-dom';
 import { PersoniumLoading } from './parts/PersoniumLoading';
+import { PersoniumBarInstaller } from './PersoniumBarInstaller';
 
 const LS_LAST_LOGIN_CELL = 'lastLoginCell';
 
@@ -49,25 +49,26 @@ function PersoniumAuthentication() {
   const authInfo = useRecoilValue($authInfo);
   const setLogin = useSetRecoilState(isLogin);
   const setToken = useSetRecoilState(tokens);
-  const setError = useSetRecoilState(isError);
+  const setBarInstalled = useSetRecoilState($barInstalled);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     let unmounted = false;
     let autoRefreshID = -1;
 
-    // const appUrlSplit = `${location.origin}${location.pathname}`.split('/');
-    // const appCellUrl = isLocalMode
-    //   ? 'https://app-personium-trails.appdev.personium.io/'
-    //   : `${appUrlSplit.slice(0, 3).join('/')}/`;
-    const appCellUrl = 'https://app-personium-trails.appdev.personium.io/';
+    const appUrlSplit = `${location.origin}${location.pathname}`.split('/');
+    const appCellUrl = isLocalMode
+      ? 'https://app-personium-trails.appdev.personium.io/'
+      : `${appUrlSplit.slice(0, 3).join('/')}/`;
+    // const appCellUrl = 'https://app-personium-trails.appdev.personium.io/';
     const targetCell = authInfo.cellUrl;
 
     const handler = isLocalMode
       ? new PersoniumLoginROPC(
           targetCell,
-          'app-personium-trails',
           localStorage.getItem('USERNAME_FOR_DEVELOPMENT'),
-          localStorage.getItem('PASSWORD_FOR_DEVELOPMENT')
+          localStorage.getItem('PASSWORD_FOR_DEVELOPMENT'),
+          'https://app-personium-trails.appdev.personium.io/'
         )
       : new PersoniumLoginHandler(targetCell);
 
@@ -76,16 +77,6 @@ function PersoniumAuthentication() {
     console.log(appCellUrl, authInfo);
     handler
       .loginAsync(appCellUrl, authInfo)
-      .then(() => {
-        // sined in successfully
-        console.log('logged in');
-        if (!unmounted) {
-          setLogin(true);
-          setToken(authState.accessToken);
-        }
-        // start refreshing access_token (per 3000 sec)
-        autoRefreshID = setInterval(() => handler.refreshAsync(), 3000 * 1000);
-      })
       .catch(res => {
         // ToDo: change handling depending on situation.
         console.log(JSON.stringify(res));
@@ -94,6 +85,7 @@ function PersoniumAuthentication() {
           setError({
             message: 'Authentication failed',
             body: `Cell not found: ${targetCell}`,
+            // ToDo: refactoring
             bodyUrl: 'javascript: location.reload();',
           });
         } else {
@@ -103,6 +95,37 @@ function PersoniumAuthentication() {
             bodyUrl: targetCell,
           });
         }
+        return Promise.reject(res);
+      })
+      .then(authState => {
+        // sined in successfully
+        console.log('logged in');
+        if (!unmounted) {
+          setToken(authState.accessToken);
+        }
+        // start refreshing access_token (per 3000 sec)
+        autoRefreshID = setInterval(() => handler.refreshAsync(), 3000 * 1000);
+
+        // check bar installed;
+        return authState
+          .updateBoxUrl() // ToDo: refactoring Promise chain
+          .then(() => {
+            setBarInstalled(true);
+          })
+          .catch(res => {
+            if (res.status === 403) {
+              console.log('bar not installed');
+              setBarInstalled(false);
+            }
+          });
+      })
+      .then(res => {
+        if (!unmounted) {
+          setLogin(true);
+        }
+      })
+      .catch(reason => {
+        console.log('error happened', reason);
       });
 
     return () => {
@@ -112,14 +135,21 @@ function PersoniumAuthentication() {
         clearInterval(autoRefreshID);
       }
     };
-  }, [authInfo, isLocalMode, setToken, setLogin, setError]);
+  }, [authInfo, isLocalMode, setToken, setLogin, setError, setBarInstalled]);
 
-  return null;
+  return error ? (
+    <>
+      <h1>{error.message || 'Oops, you cannot sign in'}</h1>
+      <p>
+        <a href={error.bodyUrl}>{error.body || 'click'}</a>
+      </p>
+    </>
+  ) : null;
 }
 
 export function PersoniumAppWrapper(props) {
   const login = useRecoilValue(isLogin);
-  const error = useRecoilValue(isError);
+  const barInstalled = useRecoilValue($barInstalled);
   const [authInfo, setAuthInfo] = useRecoilState($authInfo);
   const setLocalMode = useSetRecoilState($localMode);
   const history = useHistory();
@@ -128,8 +158,9 @@ export function PersoniumAppWrapper(props) {
     console.log('mounted PersoniumAppWrapper');
 
     // ToDo: Set initialState in RecoilRoot
-    const isLocalMode = false;
-    // location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+    const isLocalMode =
+      //  false;
+      location.hostname === 'localhost' || location.hostname === '127.0.0.1';
 
     setLocalMode(isLocalMode);
 
@@ -187,7 +218,7 @@ export function PersoniumAppWrapper(props) {
     // }
   }, []);
 
-  if (login) return props.children;
+  if (login && barInstalled === true) return props.children;
 
   return (
     <div
@@ -200,24 +231,18 @@ export function PersoniumAppWrapper(props) {
     >
       <div style={{ flexGrow: 1 }} />
       {(() => {
-        if (authInfo !== null) {
-          return (
-            <>
-              <PersoniumAuthentication />
-              <PersoniumLoading />
-              {error ? (
-                <>
-                  <h1>{error.message || 'Oops, you cannot sign in'}</h1>
-                  <p>
-                    <a href={error.bodyUrl}>{error.body || 'click'}</a>
-                  </p>
-                </>
-              ) : null}
-            </>
-          );
-        } else {
-          return <PersoniumCellURL />;
-        }
+        if (authInfo === null) return <PersoniumCellURL />;
+
+        // attempt to login
+        return (
+          <>
+            <PersoniumLoading />
+            {(() => {
+              if (!login) return <PersoniumAuthentication />;
+              if (!barInstalled) return <PersoniumBarInstaller />;
+            })()}
+          </>
+        );
       })()}
       <div style={{ flexGrow: 1 }} />
     </div>

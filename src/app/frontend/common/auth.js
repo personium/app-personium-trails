@@ -5,11 +5,6 @@ export const isLogin = atom({
   default: false,
 });
 
-export const isError = atom({
-  key: 'personiumIsError',
-  default: null,
-});
-
 export const tokens = atom({
   key: 'personiumTokens',
   default: null,
@@ -17,5 +12,10 @@ export const tokens = atom({
 
 export const $authInfo = atom({
   key: 'personiumAuthInfo',
+  default: null,
+});
+
+export const $barInstalled = atom({
+  key: 'personiumBarInstalled',
   default: null,
 });
