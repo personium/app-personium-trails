@@ -14,3 +14,8 @@ export const tokens = atom({
   key: 'personiumTokens',
   default: null,
 });
+
+export const $authInfo = atom({
+  key: 'personiumAuthInfo',
+  default: null,
+});

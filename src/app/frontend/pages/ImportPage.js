@@ -2,7 +2,6 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { Segment, Header, Select, Button, Form } from 'semantic-ui-react';
 
 import webdav from 'webdav';
-import { atomLocalMode } from '../common/state';
 import { useRecoilValue } from 'recoil';
 import { authState as handler } from '../lib/personium_auth_adapter';
 
@@ -10,7 +9,6 @@ export function ImportPage(props) {
   const [selected, setSelected] = useState(null);
   const [files, setFiles] = useState(null);
   const [sending, setSending] = useState(false);
-  const localMode = useRecoilValue(atomLocalMode);
 
   useEffect(() => {
     // on mounted
@@ -61,7 +59,6 @@ export function ImportPage(props) {
   });
 
   const onSubmit = useCallback(() => {
-    if (localMode) return;
     console.log('start import', selected);
     setSending(true);
     fetch(`${handler.boxUrl}Engine/process_uploaded_data`, {
